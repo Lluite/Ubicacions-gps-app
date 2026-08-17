@@ -3,8 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Ubicacions GPS</title>
-    <link rel="stylesheet" href="./styles.css?v=20260817-1" />
+    <link rel="stylesheet" href="./styles.css?v=20260817-2" />
   </head>
   <body>
     <div class="app-shell">
@@ -64,10 +67,11 @@
       <main class="record-card">
         <header class="top-bar">
           <div class="brand">
-            <img src="./pin-gps.png?v=20260817-1" alt="GPS" class="brand-pin" />
+            <img src="./pin-gps.png?v=20260817-2" alt="GPS" class="brand-pin" />
             <div>
               <p class="eyebrow">Agenda de llocs</p>
               <h1>Ubicacions GPS</h1>
+              <p class="version-pill">v2</p>
             </div>
           </div>
 
@@ -76,10 +80,10 @@
             <button type="button" class="function-badge plain-badge" id="saveButton">Guardar</button>
             <div class="mini-actions">
               <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
-                <img src="./llistat-icon.png?v=20260817-1" alt="" class="toolbar-icon" />
+                <img src="./llistat-icon.png?v=20260817-2" alt="" class="toolbar-icon" />
               </button>
               <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
-                <img src="./paperera-icon.png?v=20260817-1" alt="" class="toolbar-icon" />
+                <img src="./paperera-icon.png?v=20260817-2" alt="" class="toolbar-icon" />
               </button>
             </div>
           </div>
@@ -149,7 +153,7 @@
               <div class="field-inline">
                 <input type="text" id="webInput" placeholder="https://..." />
                 <button type="button" class="inline-action icon-action" id="openWebButton" aria-label="Obrir web">
-                  <img src="./web-icon.png?v=20260817-1" alt="" class="inline-icon" />
+                  <img src="./web-icon.png?v=20260817-2" alt="" class="inline-icon" />
                 </button>
               </div>
             </label>
@@ -160,7 +164,7 @@
                 <div class="field-inline">
                   <input type="text" id="phoneInput" placeholder="+34 600 000 000" />
                   <button type="button" class="inline-action icon-action call" id="callButton" aria-label="Trucar">
-                    <img src="./telefon-icon.png?v=20260817-1" alt="" class="inline-icon" />
+                    <img src="./telefon-icon.png?v=20260817-2" alt="" class="inline-icon" />
                   </button>
                 </div>
               </label>
@@ -192,7 +196,7 @@
                     Obrir galeria extra
                   </button>
                   <label class="camera-button">
-                    <img src="./camera-icon.png?v=20260817-1" alt="" />
+                    <img src="./camera-icon.png?v=20260817-2" alt="" />
                     <span>Afegir</span>
                     <input type="file" id="photoInput" accept="image/*" multiple hidden />
                   </label>
@@ -228,6 +232,6 @@
       </button>
     </template>
 
-    <script src="./app.js?v=20260817-1"></script>
+    <script src="./app.js?v=20260817-2"></script>
   </body>
 </html>

@@ -81,6 +81,21 @@ textarea {
   margin: 0;
 }
 
+.version-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 22px;
+  margin: 6px 0 0;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f3e8d1;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
 .eyebrow {
   margin: 0 0 4px;
   font-size: 0.72rem;
