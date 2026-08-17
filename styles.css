@@ -147,9 +147,9 @@ textarea {
 }
 
 .icon-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 18px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   font-size: 1.4rem;
@@ -166,8 +166,8 @@ textarea {
 }
 
 .toolbar-icon {
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   display: block;
   margin: 0 auto;
@@ -730,8 +730,8 @@ textarea {
   }
 
   .icon-button {
-    width: 58px;
-    height: 58px;
+    width: 50px;
+    height: 50px;
   }
 
   .two-columns {

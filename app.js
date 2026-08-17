@@ -51,7 +51,19 @@ const buttons = {
 const photoInput = document.getElementById("photoInput");
 const quickPhotoInput = document.getElementById("quickPhotoInput");
 const extraPhotoInput = document.getElementById("extraPhotoInput");
-const groupOptions = document.getElementById("groupOptions");
+
+const DEFAULT_GROUP_CHOICES = [
+  "Restaurant",
+  "Parking",
+  "Casa",
+  "Platja",
+  "Hotel",
+  "Botiga",
+  "Mirador",
+  "Bar",
+  "Museu",
+  "Lloc d'interès",
+];
 
 let state = {
   records: loadRecords(),
@@ -82,19 +94,6 @@ const GROUP_MAP = {
   viewpoint: "Mirador",
   attraction: "Lloc d'interès",
 };
-
-const DEFAULT_GROUP_CHOICES = [
-  "Restaurant",
-  "Parking",
-  "Casa",
-  "Platja",
-  "Hotel",
-  "Botiga",
-  "Mirador",
-  "Bar",
-  "Museu",
-  "Lloc d'interès",
-];
 
 function loadRecords() {
   try {
@@ -132,12 +131,24 @@ function saveGroupChoices() {
 }
 
 function renderGroupChoices() {
-  groupOptions.innerHTML = "";
+  fields.group.innerHTML = "";
+
+  const emptyOption = document.createElement("option");
+  emptyOption.value = "";
+  emptyOption.textContent = "Tria un grup...";
+  fields.group.appendChild(emptyOption);
+
   state.groupChoices.forEach((choice) => {
     const option = document.createElement("option");
     option.value = choice;
-    groupOptions.appendChild(option);
+    option.textContent = choice;
+    fields.group.appendChild(option);
   });
+
+  const newOption = document.createElement("option");
+  newOption.value = "__new__";
+  newOption.textContent = "Afegir grup nou...";
+  fields.group.appendChild(newOption);
 }
 
 function rememberGroupChoice(value) {
@@ -151,6 +162,36 @@ function rememberGroupChoice(value) {
     saveGroupChoices();
     renderGroupChoices();
   }
+}
+
+function promptNewGroup() {
+  const value = window.prompt("Escriu el nom del grup nou:");
+  if (!value) {
+    fields.group.value = "";
+    return;
+  }
+
+  const clean = value.trim();
+  if (!clean) {
+    fields.group.value = "";
+    return;
+  }
+
+  rememberGroupChoice(clean);
+  fields.group.value = clean;
+  markDirty();
+}
+
+function setGroupValue(value) {
+  renderGroupChoices();
+
+  if (!value) {
+    fields.group.value = "";
+    return;
+  }
+
+  rememberGroupChoice(value);
+  fields.group.value = value;
 }
 
 function createBlankRecord() {
@@ -178,8 +219,12 @@ function getCurrentRecord() {
 
 function fillForm(record) {
   Object.entries(fields).forEach(([key, input]) => {
+    if (key === "group") {
+      return;
+    }
     input.value = record?.[key] || "";
   });
+  setGroupValue(record?.group || "");
   state.activePhotoIndex = 0;
   state.activeGalleryPhotoIndex = 0;
   renderPhotos(record?.photosPrimary || []);
@@ -721,6 +766,14 @@ function bootstrap() {
 
 Object.values(fields).forEach((input) => {
   input.addEventListener("input", markDirty);
+});
+
+fields.group.addEventListener("change", () => {
+  if (fields.group.value === "__new__") {
+    promptNewGroup();
+    return;
+  }
+  markDirty();
 });
 
 searchInput.addEventListener("input", () => {
