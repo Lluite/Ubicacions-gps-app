@@ -318,13 +318,12 @@ function renderPhotos(photos) {
     addSlide.className = "photo-slide add-slide";
     addSlide.innerHTML = `
       <div class="add-photo-slide">
-        <img src="./camera-icon.png?v=20260817-4" alt="" />
+        <img src="./camera-icon.png?v=20260817-5" alt="" />
         <strong>Espai per una altra foto</strong>
         <span>Quan hi arribis lliscant, toca aquest botó i afegeix la següent imatge.</span>
-        <label class="slide-upload-label">
+        <button type="button" class="slide-upload-label" id="slideAddPhotoButton">
           Afegir foto
-          <input type="file" id="slidePhotoInput" accept="image/*" multiple hidden />
-        </label>
+        </button>
       </div>
     `;
     carousel.appendChild(addSlide);
@@ -338,13 +337,10 @@ function renderPhotos(photos) {
     photoDots.appendChild(dot);
   }
 
-  const slidePhotoInput = document.getElementById("slidePhotoInput");
-  if (slidePhotoInput) {
-    slidePhotoInput.addEventListener("change", () => {
-      if (slidePhotoInput.files?.length) {
-        handlePhotos(slidePhotoInput.files, "primary");
-        slidePhotoInput.value = "";
-      }
+  const slideAddPhotoButton = document.getElementById("slideAddPhotoButton");
+  if (slideAddPhotoButton) {
+    slideAddPhotoButton.addEventListener("click", () => {
+      photoInput.click();
     });
   }
 
