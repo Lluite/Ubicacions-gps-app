@@ -76,7 +76,6 @@
           </div>
 
           <div class="top-actions">
-            <button type="button" class="function-badge plain-badge" id="newButton">Nou</button>
             <button type="button" class="function-badge plain-badge" id="saveButton">Guardar</button>
             <div class="mini-actions">
               <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
@@ -91,25 +90,6 @@
 
         <section class="content-grid">
           <form id="recordForm" class="record-form" novalidate>
-            <section class="quick-capture">
-              <p class="eyebrow">Captura ràpida</p>
-              <div class="quick-actions">
-                <button type="button" class="quick-button gps" id="captureGpsTopButton">
-                  <span class="quick-icon">📍</span>
-                  Gravar posició actual
-                </button>
-                <button type="button" class="quick-button route" id="routeButton">
-                  <span class="quick-icon">🧭</span>
-                  Anar a GPS
-                </button>
-                <label class="quick-button photo">
-                  <span class="quick-icon">📷</span>
-                  Fer o afegir fotos
-                  <input type="file" id="quickPhotoInput" accept="image/*" multiple hidden />
-                </label>
-              </div>
-            </section>
-
             <div class="field-row two-columns compact">
               <label class="field">
                 <span>Data</span>
@@ -180,11 +160,40 @@
           </form>
 
           <aside class="media-column">
+            <section class="quick-capture">
+              <p class="eyebrow">Captura ràpida</p>
+              <div class="quick-actions">
+                <button type="button" class="quick-button gps" id="captureGpsTopButton">
+                  <span class="quick-icon">📍</span>
+                  Gravar posició actual
+                </button>
+                <button type="button" class="quick-button route" id="routeButton">
+                  <span class="quick-icon">🧭</span>
+                  Anar a GPS
+                </button>
+                <label class="quick-button photo">
+                  <span class="quick-icon">📷</span>
+                  Fer o afegir fotos
+                  <input type="file" id="quickPhotoInput" accept="image/*" multiple hidden />
+                </label>
+              </div>
+            </section>
+
             <section class="photo-card">
-              <div class="photo-header">
+              <div class="photo-hero">
                 <div>
                   <p class="eyebrow">Imatges</p>
                   <h2 id="photoTitle">Fotos del lloc</h2>
+                </div>
+                <div class="photo-stage" id="photoStage">
+                  <p class="empty-photo">Encara no hi ha cap foto en aquest registre.</p>
+                </div>
+              </div>
+
+              <div class="photo-header">
+                <div>
+                  <p class="eyebrow">Eines de fotos</p>
+                  <h3 class="photo-subtitle">Gestiona les imatges del lloc</h3>
                 </div>
                 <div class="photo-tools">
                   <button type="button" class="album-button active" id="albumPrimaryButton">
@@ -202,10 +211,6 @@
                   </label>
                   <button type="button" class="text-chip danger-chip" id="deletePrimaryPhotoButton">Esborrar foto</button>
                 </div>
-              </div>
-
-              <div class="photo-stage" id="photoStage">
-                <p class="empty-photo">Encara no hi ha cap foto en aquest registre.</p>
               </div>
 
               <div class="photo-thumbs" id="photoThumbs"></div>

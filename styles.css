@@ -405,10 +405,23 @@ textarea {
   padding: 16px;
 }
 
+.photo-hero {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .photo-header {
   display: grid;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.photo-subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .photo-tools {
@@ -758,7 +771,7 @@ textarea {
 
   .top-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: 1fr auto;
     align-items: center;
   }
 
@@ -789,6 +802,10 @@ textarea {
 
   .media-column {
     order: -1;
+  }
+
+  .record-form {
+    order: 2;
   }
 
   .gps-panel {

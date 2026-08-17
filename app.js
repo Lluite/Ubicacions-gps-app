@@ -819,7 +819,9 @@ buttons.closeDrawer.addEventListener("click", closeDrawer);
 drawerBackdrop.addEventListener("click", closeDrawer);
 
 buttons.save.addEventListener("click", saveCurrentRecord);
-buttons.newTop.addEventListener("click", startNewRecord);
+if (buttons.newTop) {
+  buttons.newTop.addEventListener("click", startNewRecord);
+}
 buttons.newBottom.addEventListener("click", startNewRecord);
 buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
 if (buttons.deleteBottom) {
