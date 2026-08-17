@@ -75,12 +75,14 @@
           <div class="top-actions">
             <button type="button" class="function-badge plain-badge" id="newButton">Nou</button>
             <button type="button" class="function-badge plain-badge" id="saveButton">Guardar</button>
-            <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
-              🔎
-            </button>
-            <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
-              🗑
-            </button>
+            <div class="mini-actions">
+              <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
+                📋
+              </button>
+              <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
+                🗑
+              </button>
+            </div>
           </div>
         </header>
 
@@ -92,6 +94,10 @@
                 <button type="button" class="quick-button gps" id="captureGpsTopButton">
                   <span class="quick-icon">📍</span>
                   Gravar posició actual
+                </button>
+                <button type="button" class="quick-button route" id="routeButton">
+                  <span class="quick-icon">🧭</span>
+                  Anar a GPS
                 </button>
                 <label class="quick-button photo">
                   <span class="quick-icon">📷</span>
@@ -108,7 +114,7 @@
               </label>
               <label class="field">
                 <span>Hora</span>
-                <input type="text" id="timeInput" placeholder="14:25" />
+                <input type="text" id="timeInput" placeholder="14:25:33" />
               </label>
             </div>
 
@@ -119,19 +125,21 @@
               </label>
               <label class="field wide">
                 <span>Grup</span>
-                <input type="text" id="groupInput" list="groupOptions" placeholder="Restaurant, casa, platja..." />
+                <select id="groupInput">
+                  <option value="">Tria un grup...</option>
+                  <option value="Restaurant">Restaurant</option>
+                  <option value="Parking">Parking</option>
+                  <option value="Casa">Casa</option>
+                  <option value="Platja">Platja</option>
+                  <option value="Hotel">Hotel</option>
+                  <option value="Botiga">Botiga</option>
+                  <option value="Mirador">Mirador</option>
+                  <option value="Bar">Bar</option>
+                  <option value="Museu">Museu</option>
+                  <option value="Lloc d'interès">Lloc d'interès</option>
+                </select>
               </label>
             </div>
-
-            <datalist id="groupOptions">
-              <option value="Restaurant"></option>
-              <option value="Casa"></option>
-              <option value="Platja"></option>
-              <option value="Hotel"></option>
-              <option value="Botiga"></option>
-              <option value="Mirador"></option>
-              <option value="Parking"></option>
-            </datalist>
 
             <div class="field-row two-columns">
               <label class="field">
@@ -149,24 +157,23 @@
               <textarea id="addressInput" rows="4" placeholder="Direcció del lloc"></textarea>
             </label>
 
-            <label class="field wide">
+            <label class="field wide action-field">
               <span>Web</span>
-              <input type="text" id="webInput" placeholder="https://..." />
+              <div class="field-inline">
+                <input type="text" id="webInput" placeholder="https://..." />
+                <button type="button" class="inline-action" id="openWebButton" aria-label="Obrir web">↗</button>
+              </div>
             </label>
 
-            <div class="field-row two-columns phone-row">
-              <label class="field">
+            <div class="field-row two-columns">
+              <label class="field action-field">
                 <span>Telèfon</span>
-                <input type="text" id="phoneInput" placeholder="+34 600 000 000" />
+                <div class="field-inline">
+                  <input type="text" id="phoneInput" placeholder="+34 600 000 000" />
+                  <button type="button" class="inline-action call" id="callButton" aria-label="Trucar">☎</button>
+                </div>
               </label>
-              <div class="phone-actions">
-                <button type="button" class="round-action call" id="callButton" aria-label="Trucar">
-                  ☎
-                </button>
-                <button type="button" class="round-action web" id="openWebButton" aria-label="Obrir web">
-                  ↗
-                </button>
-              </div>
+              <div class="field ghost-field"></div>
             </div>
 
             <label class="field wide">
@@ -174,12 +181,7 @@
               <textarea id="notesInput" rows="5" placeholder="Observacions, referències o detalls útils"></textarea>
             </label>
 
-            <section class="gps-panel">
-              <p class="gps-status" id="gpsStatus">Pots capturar la posició actual o escriure les coordenades manualment.</p>
-              <div class="gps-actions">
-                <button type="button" class="secondary-button" id="routeButton">Anar a GPS</button>
-              </div>
-            </section>
+            <p class="gps-status floating-status" id="gpsStatus">Pots capturar la posició actual o escriure les coordenades manualment.</p>
           </form>
 
           <aside class="media-column">

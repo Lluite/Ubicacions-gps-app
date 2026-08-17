@@ -96,9 +96,15 @@ textarea {
   gap: 12px;
 }
 
+.mini-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .plain-badge {
   justify-content: center;
-  min-width: 112px;
+  min-width: 98px;
 }
 
 .function-badge,
@@ -181,7 +187,7 @@ textarea {
 
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 14px;
 }
 
@@ -203,6 +209,11 @@ textarea {
 }
 
 .quick-button.photo {
+  background: #fff;
+  color: var(--ink);
+}
+
+.quick-button.route {
   background: #fff;
   color: var(--ink);
 }
@@ -236,18 +247,21 @@ textarea {
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
-  border: 1px solid var(--line);
-  background: #fffdf7;
+  border: 0;
+  border-bottom: 2px solid rgba(147, 124, 70, 0.34);
+  background: rgba(255, 253, 247, 0.72);
   color: var(--ink);
-  border-radius: 0;
-  padding: 16px 18px;
+  border-radius: 18px 18px 8px 8px;
+  padding: 16px 18px 12px;
   outline: none;
-  box-shadow: inset 0 -2px 0 rgba(60, 43, 10, 0.08);
+  box-shadow: inset 0 -1px 0 rgba(60, 43, 10, 0.05);
 }
 
-.field input {
+.field input,
+.field select {
   min-height: 62px;
 }
 
@@ -257,43 +271,40 @@ textarea {
 }
 
 .field input:focus,
+.field select:focus,
 .field textarea:focus,
 .search-box input:focus {
-  border-color: #8e78ff;
-  box-shadow: 0 0 0 4px rgba(142, 120, 255, 0.14);
+  border-bottom-color: #8e78ff;
+  box-shadow: 0 0 0 4px rgba(142, 120, 255, 0.12);
 }
 
-.phone-row {
+.field-inline {
+  display: grid;
+  grid-template-columns: 1fr 56px;
+  gap: 10px;
   align-items: end;
 }
 
-.phone-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
-  padding-bottom: 6px;
+.field-inline input {
+  min-width: 0;
 }
 
-.round-action {
-  width: 76px;
-  height: 76px;
-  border-radius: 24px;
-  border: 1px solid rgba(45, 172, 74, 0.2);
-  font-size: 2rem;
-  box-shadow: 0 16px 30px rgba(30, 132, 53, 0.2);
-}
-
-.round-action.call {
-  background: linear-gradient(180deg, #3fd760, #26a644);
-  color: #fff;
-}
-
-.round-action.web {
+.inline-action {
+  min-height: 62px;
+  border-radius: 18px;
   background: #fff;
   color: var(--ink);
-  border-color: rgba(45, 34, 68, 0.12);
   box-shadow: 0 12px 24px rgba(45, 34, 68, 0.08);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.inline-action.call {
+  color: #156b31;
+}
+
+.ghost-field {
+  display: block;
 }
 
 .gps-panel,
@@ -313,6 +324,10 @@ textarea {
 .gps-status {
   margin: 0;
   color: var(--muted);
+}
+
+.floating-status {
+  padding: 0 4px;
 }
 
 .gps-actions {
@@ -674,11 +689,13 @@ textarea {
   }
 
   .top-actions {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
   }
 
-  .quick-actions {
-    grid-template-columns: 1fr;
+  .mini-actions {
+    justify-content: flex-end;
   }
 
   .two-columns {
@@ -735,5 +752,9 @@ textarea {
 
   .gallery-camera {
     width: 100%;
+  }
+
+  .ghost-field {
+    display: none;
   }
 }
