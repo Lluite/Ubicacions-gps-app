@@ -187,8 +187,8 @@ textarea {
 
 .quick-capture {
   display: grid;
-  gap: 18px;
-  padding: 20px;
+  gap: 10px;
+  padding: 14px;
   border-radius: 26px;
   background: linear-gradient(135deg, #fff7ea 0%, #fffdf8 55%, #f8f1e2 100%);
   border: 1px solid rgba(90, 72, 34, 0.12);
@@ -197,20 +197,22 @@ textarea {
 
 .quick-actions {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .quick-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  min-height: 72px;
-  padding: 14px 18px;
-  border-radius: 22px;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px 12px;
+  border-radius: 18px;
   font-weight: 800;
   box-shadow: 0 14px 28px rgba(45, 34, 68, 0.08);
+  font-size: 0.92rem;
+  text-align: center;
 }
 
 .quick-button.gps {
@@ -229,7 +231,7 @@ textarea {
 }
 
 .quick-icon {
-  font-size: 1.5rem;
+  font-size: 1.12rem;
 }
 
 .field-row {
@@ -355,6 +357,7 @@ textarea {
   margin: 0;
   color: var(--muted);
   min-height: 0;
+  display: none;
 }
 
 .floating-status {
@@ -384,13 +387,13 @@ textarea {
 }
 
 .photo-card {
-  padding: 20px;
+  padding: 16px;
 }
 
 .photo-header {
   display: grid;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .photo-tools {
@@ -401,13 +404,14 @@ textarea {
 }
 
 .text-chip {
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 16px;
   border-radius: 999px;
   background: #fff;
   color: var(--ink);
   box-shadow: 0 10px 18px rgba(45, 34, 68, 0.06);
   font-weight: 700;
+  font-size: 0.9rem;
 }
 
 .danger-chip {
@@ -419,14 +423,15 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 52px;
-  padding: 0 16px;
+  min-height: 46px;
+  padding: 0 14px;
   border-radius: 16px;
   border: 1px solid rgba(45, 34, 68, 0.1);
   background: #fff;
   color: var(--ink);
   font-weight: 700;
   box-shadow: 0 10px 20px rgba(45, 34, 68, 0.06);
+  font-size: 0.92rem;
 }
 
 .album-button span {
@@ -449,11 +454,12 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 12px 24px rgba(45, 34, 68, 0.08);
   font-weight: 700;
+  font-size: 0.92rem;
 }
 
 .camera-button img {
@@ -462,7 +468,7 @@ textarea {
 }
 
 .photo-stage {
-  min-height: 300px;
+  min-height: 380px;
   border-radius: 24px;
   border: 1px dashed rgba(96, 78, 35, 0.22);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(250, 243, 230, 0.88));
@@ -514,15 +520,15 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 18px 24px;
+  gap: 14px;
+  padding: 14px 18px;
 }
 
 .bottom-action {
-  width: 72px;
-  height: 72px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  font-size: 2rem;
+  font-size: 1.55rem;
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
@@ -750,6 +756,18 @@ textarea {
     height: 50px;
   }
 
+  .quick-capture {
+    padding: 12px;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .quick-button.photo {
+    grid-column: 1 / -1;
+  }
+
   .two-columns {
     grid-template-columns: 1fr;
   }
@@ -786,6 +804,11 @@ textarea {
     grid-column: 1 / -1;
   }
 
+  .text-chip {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
   .gallery-panel {
     width: calc(100vw - 12px);
     max-height: calc(100vh - 12px);
@@ -808,5 +831,9 @@ textarea {
 
   .ghost-field {
     display: none;
+  }
+
+  .photo-stage {
+    min-height: 300px;
   }
 }
