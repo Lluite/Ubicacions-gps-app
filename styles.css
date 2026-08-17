@@ -94,12 +94,14 @@ textarea {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 
 .mini-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-left: 4px;
 }
 
 .plain-badge {
@@ -145,9 +147,9 @@ textarea {
 }
 
 .icon-button {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   font-size: 1.4rem;
@@ -161,6 +163,14 @@ textarea {
 .icon-button.subtle {
   background: rgba(64, 63, 67, 0.08);
   color: var(--ink);
+}
+
+.toolbar-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .content-grid {
@@ -267,11 +277,13 @@ textarea {
 .field input,
 .field select {
   min-height: 62px;
+  font-size: 1.03rem;
 }
 
 .field textarea {
   min-height: 130px;
   resize: vertical;
+  font-size: 1.02rem;
 }
 
 .field input:focus,
@@ -284,7 +296,7 @@ textarea {
 
 .field-inline {
   display: grid;
-  grid-template-columns: 1fr 92px;
+  grid-template-columns: 1fr 72px;
   gap: 10px;
   align-items: end;
 }
@@ -308,6 +320,19 @@ textarea {
   color: #145f2c;
 }
 
+.icon-action {
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.inline-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
+
 .ghost-field {
   display: block;
 }
@@ -329,6 +354,7 @@ textarea {
 .gps-status {
   margin: 0;
   color: var(--muted);
+  min-height: 0;
 }
 
 .floating-status {
@@ -695,12 +721,17 @@ textarea {
 
   .top-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr auto;
     align-items: center;
   }
 
   .mini-actions {
     justify-content: flex-end;
+  }
+
+  .icon-button {
+    width: 58px;
+    height: 58px;
   }
 
   .two-columns {
