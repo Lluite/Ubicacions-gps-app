@@ -8,7 +8,7 @@ const recordCounter = document.getElementById("recordCounter");
 const searchInput = document.getElementById("searchInput");
 const gpsStatus = document.getElementById("gpsStatus");
 const photoStage = document.getElementById("photoStage");
-const photoThumbs = document.getElementById("photoThumbs");
+const photoDots = document.getElementById("photoDots");
 const photoTitle = document.getElementById("photoTitle");
 const photoCounterPill = document.getElementById("photoCounterPill");
 const photoHelper = document.getElementById("photoHelper");
@@ -274,38 +274,101 @@ function discardChangesSilently() {
   state.dirty = false;
 }
 
-function renderPhotos(photos) {
-  photoStage.innerHTML = "";
-  photoThumbs.innerHTML = "";
-  photoTitle.textContent = "Fotos del lloc";
+function refreshPhotoStatus(photos, totalSlides) {
+  const onAddSlide = photos.length < 5 && state.activePhotoIndex === totalSlides - 1;
   photoCounterPill.textContent = `${photos.length}/5`;
-  photoHelper.textContent = photos.length
-    ? `Foto ${state.activePhotoIndex + 1} visible. Pots tocar les miniatures per canviar ràpidament.`
-    : "La foto principal queda ben visible i la resta queden a sota.";
-  buttons.albumPrimary.classList.add("active");
-  buttons.albumExtra.classList.remove("active");
 
   if (!photos.length) {
-    photoStage.innerHTML = '<p class="empty-photo">Encara no hi ha cap foto principal en aquest registre.</p>';
-    return;
+    photoHelper.textContent = "Llisca cap als costats i toca l'espai en blanc per afegir la primera foto.";
+  } else if (onAddSlide) {
+    photoHelper.textContent = "Ara ets a l'espai en blanc. Toca'l si vols afegir una altra foto.";
+  } else {
+    photoHelper.textContent = `Foto ${state.activePhotoIndex + 1} de ${photos.length}. Llisca cap als costats per veure'n més.`;
   }
 
-  const active = photos[state.activePhotoIndex] || photos[0];
-  const full = document.createElement("img");
-  full.src = active;
-  full.alt = "Foto del registre";
-  photoStage.appendChild(full);
+  buttons.deletePrimaryPhoto.disabled = !photos.length || onAddSlide;
+  buttons.deletePrimaryPhoto.classList.toggle("is-disabled", !photos.length || onAddSlide);
+
+  [...photoDots.children].forEach((dot, index) => {
+    dot.classList.toggle("active", index === state.activePhotoIndex);
+  });
+}
+
+function renderPhotos(photos) {
+  photoStage.innerHTML = "";
+  photoDots.innerHTML = "";
+  photoTitle.textContent = "Fotos del lloc";
+  const canAddMore = photos.length < 5;
+  const totalSlides = photos.length + (canAddMore ? 1 : 0);
+
+  state.activePhotoIndex = Math.max(0, Math.min(state.activePhotoIndex, Math.max(0, totalSlides - 1)));
+
+  const carousel = document.createElement("div");
+  carousel.className = "photo-carousel";
 
   photos.forEach((photo, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `photo-thumb${index === state.activePhotoIndex ? " active" : ""}`;
-    button.innerHTML = `<img src="${photo}" alt="Miniatura ${index + 1}" />`;
-    button.addEventListener("click", () => {
-      state.activePhotoIndex = index;
-      renderPhotos(photos);
+    const slide = document.createElement("article");
+    slide.className = "photo-slide";
+    slide.innerHTML = `<img src="${photo}" alt="Foto ${index + 1} del registre" />`;
+    carousel.appendChild(slide);
+  });
+
+  if (canAddMore) {
+    const addSlide = document.createElement("article");
+    addSlide.className = "photo-slide add-slide";
+    addSlide.innerHTML = `
+      <div class="add-photo-slide">
+        <img src="./camera-icon.png?v=20260817-4" alt="" />
+        <strong>Espai per una altra foto</strong>
+        <span>Quan hi arribis lliscant, toca aquest botó i afegeix la següent imatge.</span>
+        <label class="slide-upload-label">
+          Afegir foto
+          <input type="file" id="slidePhotoInput" accept="image/*" multiple hidden />
+        </label>
+      </div>
+    `;
+    carousel.appendChild(addSlide);
+  }
+
+  photoStage.appendChild(carousel);
+
+  for (let index = 0; index < totalSlides; index += 1) {
+    const dot = document.createElement("span");
+    dot.className = `photo-dot${index === state.activePhotoIndex ? " active" : ""}`;
+    photoDots.appendChild(dot);
+  }
+
+  const slidePhotoInput = document.getElementById("slidePhotoInput");
+  if (slidePhotoInput) {
+    slidePhotoInput.addEventListener("change", () => {
+      if (slidePhotoInput.files?.length) {
+        handlePhotos(slidePhotoInput.files, "primary");
+        slidePhotoInput.value = "";
+      }
     });
-    photoThumbs.appendChild(button);
+  }
+
+  let ticking = false;
+  carousel.addEventListener("scroll", () => {
+    if (ticking) {
+      return;
+    }
+
+    ticking = true;
+    requestAnimationFrame(() => {
+      const width = carousel.clientWidth || 1;
+      const nextIndex = Math.max(0, Math.min(totalSlides - 1, Math.round(carousel.scrollLeft / width)));
+      if (nextIndex !== state.activePhotoIndex) {
+        state.activePhotoIndex = nextIndex;
+        refreshPhotoStatus(photos, totalSlides);
+      }
+      ticking = false;
+    });
+  });
+
+  requestAnimationFrame(() => {
+    carousel.scrollLeft = carousel.clientWidth * state.activePhotoIndex;
+    refreshPhotoStatus(photos, totalSlides);
   });
 }
 
@@ -799,7 +862,7 @@ function deleteCurrentPhoto(target = "primary") {
 
   if (target === "primary") {
     const photos = [...(current.photosPrimary || [])];
-    if (!photos.length) {
+    if (!photos.length || state.activePhotoIndex >= photos.length) {
       return;
     }
     photos.splice(state.activePhotoIndex, 1);
@@ -824,15 +887,11 @@ function deleteCurrentPhoto(target = "primary") {
 
 function openExtraGallery() {
   galleryModal.hidden = false;
-  buttons.albumPrimary.classList.remove("active");
-  buttons.albumExtra.classList.add("active");
   renderExtraGallery(getCurrentRecord()?.photosExtra || []);
 }
 
 function closeExtraGallery() {
   galleryModal.hidden = true;
-  buttons.albumPrimary.classList.add("active");
-  buttons.albumExtra.classList.remove("active");
 }
 
 function bootstrap() {
@@ -887,11 +946,15 @@ buttons.captureGpsTop.addEventListener("click", captureGps);
 buttons.route.addEventListener("click", openRoute);
 buttons.call.addEventListener("click", callPhone);
 buttons.web.addEventListener("click", openWeb);
-buttons.albumPrimary.addEventListener("click", () => {
-  state.activePhotoIndex = 0;
-  renderPhotos(getCurrentRecord()?.photosPrimary || []);
-});
-buttons.albumExtra.addEventListener("click", openExtraGallery);
+if (buttons.albumPrimary) {
+  buttons.albumPrimary.addEventListener("click", () => {
+    state.activePhotoIndex = 0;
+    renderPhotos(getCurrentRecord()?.photosPrimary || []);
+  });
+}
+if (buttons.albumExtra) {
+  buttons.albumExtra.addEventListener("click", openExtraGallery);
+}
 buttons.closeGallery.addEventListener("click", closeExtraGallery);
 buttons.deletePrimaryPhoto.addEventListener("click", () => deleteCurrentPhoto("primary"));
 buttons.deleteExtraPhoto.addEventListener("click", () => deleteCurrentPhoto("extra"));
