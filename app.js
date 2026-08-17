@@ -37,7 +37,6 @@ const buttons = {
   deleteBottom: document.getElementById("deleteBottomButton"),
   openDrawer: document.getElementById("openDrawerButton"),
   closeDrawer: document.getElementById("closeDrawerButton"),
-  captureGps: document.getElementById("captureGpsButton"),
   captureGpsTop: document.getElementById("captureGpsTopButton"),
   route: document.getElementById("routeButton"),
   call: document.getElementById("callButton"),
@@ -60,6 +59,26 @@ let state = {
   activeGalleryPhotoIndex: 0,
   dirty: false,
   searchTerm: "",
+};
+
+const GROUP_MAP = {
+  restaurant: "Restaurant",
+  cafe: "Cafè",
+  bar: "Bar",
+  fast_food: "Menjar ràpid",
+  pub: "Bar",
+  hotel: "Hotel",
+  guest_house: "Hotel",
+  apartment: "Apartament",
+  house: "Casa",
+  beach: "Platja",
+  parking: "Parking",
+  supermarket: "Botiga",
+  convenience: "Botiga",
+  mall: "Botiga",
+  museum: "Museu",
+  viewpoint: "Mirador",
+  attraction: "Lloc d'interès",
 };
 
 function loadRecords() {
@@ -360,6 +379,102 @@ function normalizeWeb(url) {
   return `https://${url}`;
 }
 
+function getWebsiteFromTags(tags = {}) {
+  return tags.website || tags["contact:website"] || tags.url || "";
+}
+
+function getPhoneFromTags(tags = {}) {
+  return tags.phone || tags["contact:phone"] || tags.mobile || tags["contact:mobile"] || "";
+}
+
+function inferGroupFromPlace(place = {}) {
+  const tags = place.tags || {};
+  const values = [tags.amenity, tags.tourism, tags.shop, tags.leisure, tags.natural, place.type, place.category].filter(Boolean);
+  for (const value of values) {
+    const normalized = String(value).toLowerCase();
+    if (GROUP_MAP[normalized]) {
+      return GROUP_MAP[normalized];
+    }
+  }
+  return "";
+}
+
+function buildAddressFromParts(address = {}) {
+  const line1 = [address.road, address.house_number].filter(Boolean).join(" ");
+  const line2 = [address.postcode, address.city || address.town || address.village || address.hamlet].filter(Boolean).join(" ");
+  const line3 = [address.state, address.country].filter(Boolean).join(", ");
+  return [line1, line2, line3].filter(Boolean).join("\n");
+}
+
+async function reverseLookup(lat, lon) {
+  const url = new URL("https://nominatim.openstreetmap.org/reverse");
+  url.searchParams.set("format", "jsonv2");
+  url.searchParams.set("lat", lat);
+  url.searchParams.set("lon", lon);
+  url.searchParams.set("addressdetails", "1");
+  url.searchParams.set("extratags", "1");
+  url.searchParams.set("namedetails", "1");
+
+  const response = await fetch(url.toString(), {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("No s'ha pogut obtenir l'adreça.");
+  }
+
+  return response.json();
+}
+
+async function nearbyPoiLookup(lat, lon) {
+  const query = `
+[out:json][timeout:20];
+(
+  node(around:40,${lat},${lon})[name];
+  way(around:40,${lat},${lon})[name];
+  relation(around:40,${lat},${lon})[name];
+);
+out tags center qt 10;
+`;
+
+  const response = await fetch("https://overpass-api.de/api/interpreter", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8",
+      Accept: "application/json",
+    },
+    body: query,
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = await response.json();
+  if (!Array.isArray(data.elements) || !data.elements.length) {
+    return null;
+  }
+
+  const scored = data.elements
+    .map((element) => {
+      const pointLat = element.lat ?? element.center?.lat;
+      const pointLon = element.lon ?? element.center?.lon;
+      const distance = pointLat && pointLon ? Math.hypot(pointLat - Number(lat), pointLon - Number(lon)) : Number.MAX_VALUE;
+      return { ...element, distance };
+    })
+    .sort((a, b) => a.distance - b.distance);
+
+  return scored[0];
+}
+
+async function enrichLocationData(lat, lon) {
+  const [reverse, poi] = await Promise.allSettled([reverseLookup(lat, lon), nearbyPoiLookup(lat, lon)]);
+  return {
+    reverse: reverse.status === "fulfilled" ? reverse.value : null,
+    poi: poi.status === "fulfilled" ? poi.value : null,
+  };
+}
+
 function openRoute() {
   const latitude = fields.latitude.value.trim();
   const longitude = fields.longitude.value.trim();
@@ -422,12 +537,50 @@ function captureGps() {
 
   gpsStatus.textContent = "Buscant la posició actual...";
   navigator.geolocation.getCurrentPosition(
-    (position) => {
-      fields.latitude.value = position.coords.latitude.toFixed(6);
-      fields.longitude.value = position.coords.longitude.toFixed(6);
+    async (position) => {
+      const latitude = position.coords.latitude.toFixed(6);
+      const longitude = position.coords.longitude.toFixed(6);
+      fields.latitude.value = latitude;
+      fields.longitude.value = longitude;
       setCurrentDateAndTime();
       markDirty();
-      gpsStatus.textContent = "Coordenades capturades. Si vols, ara pots acabar d'omplir l'adreça manualment.";
+      gpsStatus.textContent = "Coordenades capturades. Ara busco la informació del lloc...";
+
+      try {
+        const { reverse, poi } = await enrichLocationData(latitude, longitude);
+        const reverseAddress = reverse?.address || {};
+        const poiTags = poi?.tags || {};
+
+        if (!fields.address.value.trim()) {
+          fields.address.value = buildAddressFromParts(reverseAddress) || reverse?.display_name || "";
+        }
+
+        if (!fields.name.value.trim()) {
+          fields.name.value = poiTags.name || reverse?.name || reverse?.namedetails?.name || "";
+        }
+
+        if (!fields.group.value.trim()) {
+          fields.group.value = inferGroupFromPlace({
+            ...reverse,
+            tags: poiTags,
+            category: reverse?.category,
+            type: reverse?.type,
+          });
+        }
+
+        if (!fields.web.value.trim()) {
+          fields.web.value = getWebsiteFromTags(poiTags);
+        }
+
+        if (!fields.phone.value.trim()) {
+          fields.phone.value = getPhoneFromTags(poiTags);
+        }
+
+        gpsStatus.textContent =
+          "Posició guardada. He omplert l'adreça i, si el lloc tenia dades públiques, també el nom, grup, web i telèfon.";
+      } catch {
+        gpsStatus.textContent = "Posició guardada. No he pogut completar ara mateix la informació del lloc.";
+      }
     },
     () => {
       gpsStatus.textContent = "No s'ha pogut llegir la ubicació. Revisa els permisos del dispositiu.";
@@ -527,7 +680,6 @@ buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
 buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
 buttons.previous.addEventListener("click", () => changeRecord(-1));
 buttons.next.addEventListener("click", () => changeRecord(1));
-buttons.captureGps.addEventListener("click", captureGps);
 buttons.captureGpsTop.addEventListener("click", captureGps);
 buttons.route.addEventListener("click", openRoute);
 buttons.call.addEventListener("click", callPhone);

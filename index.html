@@ -79,7 +79,7 @@
               🔎
             </button>
             <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
-              ✕
+              🗑
             </button>
           </div>
         </header>
@@ -87,11 +87,7 @@
         <section class="content-grid">
           <form id="recordForm" class="record-form" novalidate>
             <section class="quick-capture">
-              <div class="quick-copy">
-                <p class="eyebrow">Captura ràpida</p>
-                <h2>Guarda el lloc en el moment</h2>
-                <p>Quan obris l'app a l'iPhone, ho important és tenir a mà la posició actual i les fotos del lloc.</p>
-              </div>
+              <p class="eyebrow">Captura ràpida</p>
               <div class="quick-actions">
                 <button type="button" class="quick-button gps" id="captureGpsTopButton">
                   <span class="quick-icon">📍</span>
@@ -179,13 +175,8 @@
             </label>
 
             <section class="gps-panel">
-              <div class="gps-text">
-                <p class="eyebrow">Ubicació</p>
-                <h2>GPS i ruta</h2>
-                <p id="gpsStatus">Pots capturar la posició actual o escriure les coordenades manualment.</p>
-              </div>
+              <p class="gps-status" id="gpsStatus">Pots capturar la posició actual o escriure les coordenades manualment.</p>
               <div class="gps-actions">
-                <button type="button" class="secondary-button" id="captureGpsButton">Gravar GPS</button>
                 <button type="button" class="secondary-button" id="routeButton">Anar a GPS</button>
               </div>
             </section>

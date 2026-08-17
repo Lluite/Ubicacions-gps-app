@@ -179,15 +179,6 @@ textarea {
   box-shadow: 0 16px 30px rgba(70, 45, 0, 0.08);
 }
 
-.quick-capture h2 {
-  margin: 0 0 6px;
-}
-
-.quick-capture p:last-child {
-  margin: 0;
-  color: var(--muted);
-}
-
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -314,22 +305,19 @@ textarea {
 }
 
 .gps-panel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  display: grid;
+  gap: 14px;
   padding: 22px;
 }
 
-.gps-text p:last-child {
-  margin-bottom: 0;
+.gps-status {
+  margin: 0;
   color: var(--muted);
 }
 
 .gps-actions {
-  display: grid;
-  gap: 12px;
-  min-width: 180px;
+  display: flex;
+  justify-content: stretch;
 }
 
 .secondary-button {
@@ -340,6 +328,7 @@ textarea {
   color: var(--ink);
   font-weight: 700;
   box-shadow: 0 12px 24px rgba(45, 34, 68, 0.07);
+  width: 100%;
 }
 
 .media-column {
