@@ -10,6 +10,8 @@ const gpsStatus = document.getElementById("gpsStatus");
 const photoStage = document.getElementById("photoStage");
 const photoThumbs = document.getElementById("photoThumbs");
 const photoTitle = document.getElementById("photoTitle");
+const photoCounterPill = document.getElementById("photoCounterPill");
+const photoHelper = document.getElementById("photoHelper");
 const galleryModal = document.getElementById("galleryModal");
 const galleryBackdrop = document.getElementById("galleryBackdrop");
 const galleryStage = document.getElementById("galleryStage");
@@ -76,6 +78,8 @@ let state = {
   searchTerm: "",
   groupChoices: loadGroupChoices(),
 };
+
+let gpsCaptureInProgress = false;
 
 const GROUP_MAP = {
   restaurant: "Restaurant",
@@ -273,7 +277,11 @@ function discardChangesSilently() {
 function renderPhotos(photos) {
   photoStage.innerHTML = "";
   photoThumbs.innerHTML = "";
-  photoTitle.textContent = `Fotos del lloc (${photos.length}/5)`;
+  photoTitle.textContent = "Fotos del lloc";
+  photoCounterPill.textContent = `${photos.length}/5`;
+  photoHelper.textContent = photos.length
+    ? `Foto ${state.activePhotoIndex + 1} visible. Pots tocar les miniatures per canviar ràpidament.`
+    : "La foto principal queda ben visible i la resta queden a sota.";
   buttons.albumPrimary.classList.add("active");
   buttons.albumExtra.classList.remove("active");
 
@@ -633,13 +641,51 @@ function setCurrentDateAndTime() {
   }
 }
 
+function setGpsCaptureBusy(isBusy) {
+  gpsCaptureInProgress = isBusy;
+  if (!buttons.captureGpsTop) {
+    return;
+  }
+
+  buttons.captureGpsTop.disabled = isBusy;
+  buttons.captureGpsTop.classList.toggle("busy", isBusy);
+  buttons.captureGpsTop.innerHTML = isBusy
+    ? '<span class="quick-icon">⏳</span> Buscant posició...'
+    : '<span class="quick-icon">📍</span> Gravar posició actual';
+}
+
+function explainGeolocationError(error) {
+  if (!error || typeof error.code !== "number") {
+    return "No s'ha pogut obtenir la ubicació ara mateix.";
+  }
+
+  if (error.code === 1) {
+    return "Has de permetre la ubicació perquè la app pugui gravar la posició actual.";
+  }
+
+  if (error.code === 2) {
+    return "La ubicació no està disponible ara mateix. Torna-ho a provar en un moment.";
+  }
+
+  if (error.code === 3) {
+    return "La lectura de la ubicació ha trigat massa. Torna-ho a provar.";
+  }
+
+  return "No s'ha pogut obtenir la ubicació ara mateix.";
+}
+
 function captureGps() {
+  if (gpsCaptureInProgress) {
+    return;
+  }
+
   if (!navigator.geolocation) {
     alert("Aquest dispositiu no permet llegir la ubicació.");
     return;
   }
 
   startNewRecord();
+  setGpsCaptureBusy(true);
   gpsStatus.textContent = "Buscant la posició actual...";
   navigator.geolocation.getCurrentPosition(
     async (position) => {
@@ -684,10 +730,14 @@ function captureGps() {
         gpsStatus.textContent = "";
       } catch {
         gpsStatus.textContent = "";
+      } finally {
+        setGpsCaptureBusy(false);
       }
     },
-    () => {
+    (error) => {
+      setGpsCaptureBusy(false);
       gpsStatus.textContent = "";
+      alert(explainGeolocationError(error));
     },
     {
       enableHighAccuracy: true,
@@ -774,11 +824,15 @@ function deleteCurrentPhoto(target = "primary") {
 
 function openExtraGallery() {
   galleryModal.hidden = false;
+  buttons.albumPrimary.classList.remove("active");
+  buttons.albumExtra.classList.add("active");
   renderExtraGallery(getCurrentRecord()?.photosExtra || []);
 }
 
 function closeExtraGallery() {
   galleryModal.hidden = true;
+  buttons.albumPrimary.classList.add("active");
+  buttons.albumExtra.classList.remove("active");
 }
 
 function bootstrap() {
