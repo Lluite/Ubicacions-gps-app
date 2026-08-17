@@ -639,6 +639,7 @@ function captureGps() {
     return;
   }
 
+  startNewRecord();
   gpsStatus.textContent = "Buscant la posició actual...";
   navigator.geolocation.getCurrentPosition(
     async (position) => {
