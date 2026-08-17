@@ -37,14 +37,13 @@
               <p class="eyebrow">F2</p>
               <h2 id="galleryTitle">Galeria extra del lloc</h2>
             </div>
-            <button type="button" class="icon-button subtle" id="closeGalleryButton" aria-label="Tancar galeria">
-              ✕
-            </button>
+            <div class="gallery-head-actions">
+              <button type="button" class="text-chip danger-chip" id="deleteExtraPhotoButton">Esborrar foto</button>
+              <button type="button" class="icon-button subtle" id="closeGalleryButton" aria-label="Tancar galeria">
+                ✕
+              </button>
+            </div>
           </header>
-
-          <p class="gallery-help">
-            Aquesta zona serveix per guardar moltes més fotos del mateix lloc sense carregar la fitxa principal.
-          </p>
 
           <div class="gallery-stage" id="galleryStage">
             <p class="empty-photo">Encara no hi ha cap foto extra en aquest registre.</p>
@@ -197,6 +196,7 @@
                     <span>Afegir</span>
                     <input type="file" id="photoInput" accept="image/*" multiple hidden />
                   </label>
+                  <button type="button" class="text-chip danger-chip" id="deletePrimaryPhotoButton">Esborrar foto</button>
                 </div>
               </div>
 

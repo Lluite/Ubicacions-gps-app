@@ -46,6 +46,8 @@ const buttons = {
   albumPrimary: document.getElementById("albumPrimaryButton"),
   albumExtra: document.getElementById("albumExtraButton"),
   closeGallery: document.getElementById("closeGalleryButton"),
+  deletePrimaryPhoto: document.getElementById("deletePrimaryPhotoButton"),
+  deleteExtraPhoto: document.getElementById("deleteExtraPhotoButton"),
 };
 
 const photoInput = document.getElementById("photoInput");
@@ -739,6 +741,37 @@ function handlePhotos(files, target = "primary") {
   });
 }
 
+function deleteCurrentPhoto(target = "primary") {
+  const current = getCurrentRecord();
+  if (!current) {
+    return;
+  }
+
+  if (target === "primary") {
+    const photos = [...(current.photosPrimary || [])];
+    if (!photos.length) {
+      return;
+    }
+    photos.splice(state.activePhotoIndex, 1);
+    current.photosPrimary = photos;
+    state.activePhotoIndex = Math.max(0, Math.min(state.activePhotoIndex, photos.length - 1));
+  } else {
+    const photos = [...(current.photosExtra || [])];
+    if (!photos.length) {
+      return;
+    }
+    photos.splice(state.activeGalleryPhotoIndex, 1);
+    current.photosExtra = photos;
+    state.activeGalleryPhotoIndex = Math.max(0, Math.min(state.activeGalleryPhotoIndex, photos.length - 1));
+  }
+
+  state.records = state.records.map((record) => (record.id === current.id ? current : record));
+  state.dirty = true;
+  saveRecords();
+  renderPhotos(current.photosPrimary || []);
+  renderExtraGallery(current.photosExtra || []);
+}
+
 function openExtraGallery() {
   galleryModal.hidden = false;
   renderExtraGallery(getCurrentRecord()?.photosExtra || []);
@@ -802,6 +835,8 @@ buttons.albumPrimary.addEventListener("click", () => {
 });
 buttons.albumExtra.addEventListener("click", openExtraGallery);
 buttons.closeGallery.addEventListener("click", closeExtraGallery);
+buttons.deletePrimaryPhoto.addEventListener("click", () => deleteCurrentPhoto("primary"));
+buttons.deleteExtraPhoto.addEventListener("click", () => deleteCurrentPhoto("extra"));
 galleryBackdrop.addEventListener("click", closeExtraGallery);
 
 photoInput.addEventListener("change", () => {

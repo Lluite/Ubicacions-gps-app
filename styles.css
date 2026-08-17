@@ -400,6 +400,21 @@ textarea {
   gap: 10px;
 }
 
+.text-chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 10px 18px rgba(45, 34, 68, 0.06);
+  font-weight: 700;
+}
+
+.danger-chip {
+  background: #fff4f1;
+  color: #b44632;
+}
+
 .album-button {
   display: inline-flex;
   align-items: center;
@@ -589,9 +604,10 @@ textarea {
   gap: 16px;
 }
 
-.gallery-help {
-  margin: 12px 0 18px;
-  color: var(--muted);
+.gallery-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .gallery-stage {
