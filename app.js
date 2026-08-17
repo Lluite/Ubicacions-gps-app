@@ -266,6 +266,10 @@ function confirmDiscardIfNeeded() {
   return window.confirm("Hi ha canvis sense guardar. Vols continuar i perdre aquests canvis?");
 }
 
+function discardChangesSilently() {
+  state.dirty = false;
+}
+
 function renderPhotos(photos) {
   photoStage.innerHTML = "";
   photoThumbs.innerHTML = "";
@@ -410,13 +414,11 @@ function saveCurrentRecord() {
   saveRecords();
   state.dirty = false;
   renderRecordList();
-  gpsStatus.textContent = "Registre guardat correctament.";
+  gpsStatus.textContent = "";
 }
 
 function startNewRecord() {
-  if (!confirmDiscardIfNeeded()) {
-    return;
-  }
+  discardChangesSilently();
   const blank = createBlankRecord();
   state.currentId = blank.id;
   fillForm(blank);
@@ -458,9 +460,7 @@ function changeRecord(step) {
     return;
   }
 
-  if (!confirmDiscardIfNeeded()) {
-    return;
-  }
+  discardChangesSilently();
 
   const ordered = [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
   const currentIndex = Math.max(
@@ -680,14 +680,13 @@ function captureGps() {
           fields.phone.value = getPhoneFromTags(poiTags);
         }
 
-        gpsStatus.textContent =
-          "Posició guardada. He omplert l'adreça i, si el lloc tenia dades públiques, també el nom, grup, web i telèfon.";
+        gpsStatus.textContent = "";
       } catch {
-        gpsStatus.textContent = "Posició guardada. No he pogut completar ara mateix la informació del lloc.";
+        gpsStatus.textContent = "";
       }
     },
     () => {
-      gpsStatus.textContent = "No s'ha pogut llegir la ubicació. Revisa els permisos del dispositiu.";
+      gpsStatus.textContent = "";
     },
     {
       enableHighAccuracy: true,
@@ -822,7 +821,9 @@ buttons.save.addEventListener("click", saveCurrentRecord);
 buttons.newTop.addEventListener("click", startNewRecord);
 buttons.newBottom.addEventListener("click", startNewRecord);
 buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
-buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
+if (buttons.deleteBottom) {
+  buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
+}
 buttons.previous.addEventListener("click", () => changeRecord(-1));
 buttons.next.addEventListener("click", () => changeRecord(1));
 buttons.captureGpsTop.addEventListener("click", captureGps);
