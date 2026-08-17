@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ca">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ubicacions GPS</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="record-drawer" id="recordDrawer" aria-hidden="true">
+        <div class="drawer-header">
+          <div>
+            <p class="eyebrow">Llistat</p>
+            <h2>Registres guardats</h2>
+          </div>
+          <button type="button" class="icon-button subtle" id="closeDrawerButton" aria-label="Tancar llistat">
+            ✕
+          </button>
+        </div>
+
+        <label class="search-box">
+          <span>Cercar registre</span>
+          <input type="search" id="searchInput" placeholder="Nom, adreça, telèfon o web" />
+        </label>
+
+        <div class="record-list" id="recordList"></div>
+      </aside>
+
+      <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+
+      <div class="gallery-modal" id="galleryModal" hidden>
+        <div class="gallery-backdrop" id="galleryBackdrop"></div>
+        <section class="gallery-panel" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+          <header class="gallery-header">
+            <div>
+              <p class="eyebrow">F2</p>
+              <h2 id="galleryTitle">Galeria extra del lloc</h2>
+            </div>
+            <button type="button" class="icon-button subtle" id="closeGalleryButton" aria-label="Tancar galeria">
+              ✕
+            </button>
+          </header>
+
+          <p class="gallery-help">
+            Aquesta zona serveix per guardar moltes més fotos del mateix lloc sense carregar la fitxa principal.
+          </p>
+
+          <div class="gallery-stage" id="galleryStage">
+            <p class="empty-photo">Encara no hi ha cap foto extra en aquest registre.</p>
+          </div>
+
+          <div class="gallery-thumbs" id="galleryThumbs"></div>
+
+          <div class="gallery-actions">
+            <label class="camera-button gallery-camera">
+              <img src="./camera-icon.png" alt="" />
+              <span>Afegir fotos extra</span>
+              <input type="file" id="extraPhotoInput" accept="image/*" multiple hidden />
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <main class="record-card">
+        <header class="top-bar">
+          <div class="brand">
+            <img src="./pin-gps.png" alt="GPS" class="brand-pin" />
+            <div>
+              <p class="eyebrow">Agenda de llocs</p>
+              <h1>Ubicacions GPS</h1>
+            </div>
+          </div>
+
+          <div class="top-actions">
+            <button type="button" class="function-badge plain-badge" id="newButton">Nou</button>
+            <button type="button" class="function-badge plain-badge" id="saveButton">Guardar</button>
+            <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
+              🔎
+            </button>
+            <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
+              ✕
+            </button>
+          </div>
+        </header>
+
+        <section class="content-grid">
+          <form id="recordForm" class="record-form" novalidate>
+            <section class="quick-capture">
+              <div class="quick-copy">
+                <p class="eyebrow">Captura ràpida</p>
+                <h2>Guarda el lloc en el moment</h2>
+                <p>Quan obris l'app a l'iPhone, ho important és tenir a mà la posició actual i les fotos del lloc.</p>
+              </div>
+              <div class="quick-actions">
+                <button type="button" class="quick-button gps" id="captureGpsTopButton">
+                  <span class="quick-icon">📍</span>
+                  Gravar posició actual
+                </button>
+                <label class="quick-button photo">
+                  <span class="quick-icon">📷</span>
+                  Fer o afegir fotos
+                  <input type="file" id="quickPhotoInput" accept="image/*" multiple hidden />
+                </label>
+              </div>
+            </section>
+
+            <div class="field-row two-columns compact">
+              <label class="field">
+                <span>Data</span>
+                <input type="text" id="dateInput" placeholder="17/08/2026" />
+              </label>
+              <label class="field">
+                <span>Hora</span>
+                <input type="text" id="timeInput" placeholder="14:25" />
+              </label>
+            </div>
+
+            <div class="field-row two-columns">
+              <label class="field wide">
+                <span>Nom</span>
+                <input type="text" id="nameInput" placeholder="Nom del lloc" />
+              </label>
+              <label class="field wide">
+                <span>Grup</span>
+                <input type="text" id="groupInput" list="groupOptions" placeholder="Restaurant, casa, platja..." />
+              </label>
+            </div>
+
+            <datalist id="groupOptions">
+              <option value="Restaurant"></option>
+              <option value="Casa"></option>
+              <option value="Platja"></option>
+              <option value="Hotel"></option>
+              <option value="Botiga"></option>
+              <option value="Mirador"></option>
+              <option value="Parking"></option>
+            </datalist>
+
+            <div class="field-row two-columns">
+              <label class="field">
+                <span>Latitud</span>
+                <input type="text" id="latitudeInput" placeholder="41.3874" />
+              </label>
+              <label class="field">
+                <span>Longitud</span>
+                <input type="text" id="longitudeInput" placeholder="2.1686" />
+              </label>
+            </div>
+
+            <label class="field wide">
+              <span>Adreça</span>
+              <textarea id="addressInput" rows="4" placeholder="Direcció del lloc"></textarea>
+            </label>
+
+            <label class="field wide">
+              <span>Web</span>
+              <input type="text" id="webInput" placeholder="https://..." />
+            </label>
+
+            <div class="field-row two-columns phone-row">
+              <label class="field">
+                <span>Telèfon</span>
+                <input type="text" id="phoneInput" placeholder="+34 600 000 000" />
+              </label>
+              <div class="phone-actions">
+                <button type="button" class="round-action call" id="callButton" aria-label="Trucar">
+                  ☎
+                </button>
+                <button type="button" class="round-action web" id="openWebButton" aria-label="Obrir web">
+                  ↗
+                </button>
+              </div>
+            </div>
+
+            <label class="field wide">
+              <span>Notes</span>
+              <textarea id="notesInput" rows="5" placeholder="Observacions, referències o detalls útils"></textarea>
+            </label>
+
+            <section class="gps-panel">
+              <div class="gps-text">
+                <p class="eyebrow">Ubicació</p>
+                <h2>GPS i ruta</h2>
+                <p id="gpsStatus">Pots capturar la posició actual o escriure les coordenades manualment.</p>
+              </div>
+              <div class="gps-actions">
+                <button type="button" class="secondary-button" id="captureGpsButton">Gravar GPS</button>
+                <button type="button" class="secondary-button" id="routeButton">Anar a GPS</button>
+              </div>
+            </section>
+          </form>
+
+          <aside class="media-column">
+            <section class="photo-card">
+              <div class="photo-header">
+                <div>
+                  <p class="eyebrow">Imatges</p>
+                  <h2 id="photoTitle">Fotos del lloc</h2>
+                </div>
+                <div class="photo-tools">
+                  <button type="button" class="album-button active" id="albumPrimaryButton">
+                    <span>F1</span>
+                    Fotos del lloc
+                  </button>
+                  <button type="button" class="album-button" id="albumExtraButton">
+                    <span>F2</span>
+                    Obrir galeria extra
+                  </button>
+                  <label class="camera-button">
+                    <img src="./camera-icon.png" alt="" />
+                    <span>Afegir</span>
+                    <input type="file" id="photoInput" accept="image/*" multiple hidden />
+                  </label>
+                </div>
+              </div>
+
+              <div class="photo-stage" id="photoStage">
+                <p class="empty-photo">Encara no hi ha cap foto en aquest registre.</p>
+              </div>
+
+              <div class="photo-thumbs" id="photoThumbs"></div>
+            </section>
+          </aside>
+        </section>
+
+        <footer class="bottom-bar">
+          <button type="button" class="bottom-action positive" id="newBottomButton">＋</button>
+          <button type="button" class="bottom-action nav" id="previousButton">⟵</button>
+          <button type="button" class="bottom-action nav" id="nextButton">⟶</button>
+          <div class="record-counter" id="recordCounter">0 registres</div>
+          <button type="button" class="bottom-action trash" id="deleteBottomButton">🗑</button>
+        </footer>
+      </main>
+    </div>
+
+    <template id="recordItemTemplate">
+      <button type="button" class="record-item">
+        <div class="record-avatar"></div>
+        <div class="record-copy">
+          <strong></strong>
+          <span></span>
+        </div>
+      </button>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
