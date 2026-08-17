@@ -772,6 +772,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .media-column {
+    order: -1;
+  }
+
   .gps-panel {
     flex-direction: column;
     align-items: stretch;
