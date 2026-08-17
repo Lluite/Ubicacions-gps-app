@@ -238,6 +238,11 @@ textarea {
 .field {
   display: grid;
   gap: 8px;
+  padding: 14px 16px 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 244, 232, 0.98));
+  border: 1px solid rgba(176, 154, 110, 0.18);
+  box-shadow: 0 12px 24px rgba(90, 72, 34, 0.07);
 }
 
 .field span {
@@ -250,14 +255,13 @@ textarea {
 .field textarea,
 .field select {
   width: 100%;
-  border: 0;
-  border-bottom: 2px solid rgba(147, 124, 70, 0.34);
-  background: rgba(255, 253, 247, 0.72);
+  border: 1px solid rgba(188, 170, 132, 0.34);
+  background: #fffdfa;
   color: var(--ink);
-  border-radius: 18px 18px 8px 8px;
-  padding: 16px 18px 12px;
+  border-radius: 18px;
+  padding: 16px 18px;
   outline: none;
-  box-shadow: inset 0 -1px 0 rgba(60, 43, 10, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .field input,
@@ -274,13 +278,13 @@ textarea {
 .field select:focus,
 .field textarea:focus,
 .search-box input:focus {
-  border-bottom-color: #8e78ff;
+  border-color: #8e78ff;
   box-shadow: 0 0 0 4px rgba(142, 120, 255, 0.12);
 }
 
 .field-inline {
   display: grid;
-  grid-template-columns: 1fr 56px;
+  grid-template-columns: 1fr 92px;
   gap: 10px;
   align-items: end;
 }
@@ -292,15 +296,16 @@ textarea {
 .inline-action {
   min-height: 62px;
   border-radius: 18px;
-  background: #fff;
-  color: var(--ink);
-  box-shadow: 0 12px 24px rgba(45, 34, 68, 0.08);
-  font-size: 1.2rem;
+  background: linear-gradient(180deg, #f3efe7, #e8dfcf);
+  color: #2c2b38;
+  box-shadow: 0 10px 18px rgba(45, 34, 68, 0.06);
+  font-size: 0.96rem;
   font-weight: 800;
+  padding: 0 10px;
 }
 
 .inline-action.call {
-  color: #156b31;
+  color: #145f2c;
 }
 
 .ghost-field {

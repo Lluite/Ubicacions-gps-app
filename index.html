@@ -125,21 +125,11 @@
               </label>
               <label class="field wide">
                 <span>Grup</span>
-                <select id="groupInput">
-                  <option value="">Tria un grup...</option>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Parking">Parking</option>
-                  <option value="Casa">Casa</option>
-                  <option value="Platja">Platja</option>
-                  <option value="Hotel">Hotel</option>
-                  <option value="Botiga">Botiga</option>
-                  <option value="Mirador">Mirador</option>
-                  <option value="Bar">Bar</option>
-                  <option value="Museu">Museu</option>
-                  <option value="Lloc d'interès">Lloc d'interès</option>
-                </select>
+                <input type="text" id="groupInput" list="groupOptions" placeholder="Restaurant, Parking, Casa..." />
               </label>
             </div>
+
+            <datalist id="groupOptions"></datalist>
 
             <div class="field-row two-columns">
               <label class="field">
@@ -161,7 +151,7 @@
               <span>Web</span>
               <div class="field-inline">
                 <input type="text" id="webInput" placeholder="https://..." />
-                <button type="button" class="inline-action" id="openWebButton" aria-label="Obrir web">↗</button>
+                <button type="button" class="inline-action" id="openWebButton" aria-label="Obrir web">Obrir</button>
               </div>
             </label>
 
@@ -170,7 +160,7 @@
                 <span>Telèfon</span>
                 <div class="field-inline">
                   <input type="text" id="phoneInput" placeholder="+34 600 000 000" />
-                  <button type="button" class="inline-action call" id="callButton" aria-label="Trucar">☎</button>
+                  <button type="button" class="inline-action call" id="callButton" aria-label="Trucar">Trucar</button>
                 </div>
               </label>
               <div class="field ghost-field"></div>
@@ -178,7 +168,7 @@
 
             <label class="field wide">
               <span>Notes</span>
-              <textarea id="notesInput" rows="5" placeholder="Observacions, referències o detalls útils"></textarea>
+              <textarea id="notesInput" rows="5"></textarea>
             </label>
 
             <p class="gps-status floating-status" id="gpsStatus">Pots capturar la posició actual o escriure les coordenades manualment.</p>

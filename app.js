@@ -51,6 +51,7 @@ const buttons = {
 const photoInput = document.getElementById("photoInput");
 const quickPhotoInput = document.getElementById("quickPhotoInput");
 const extraPhotoInput = document.getElementById("extraPhotoInput");
+const groupOptions = document.getElementById("groupOptions");
 
 let state = {
   records: loadRecords(),
@@ -59,6 +60,7 @@ let state = {
   activeGalleryPhotoIndex: 0,
   dirty: false,
   searchTerm: "",
+  groupChoices: loadGroupChoices(),
 };
 
 const GROUP_MAP = {
@@ -81,6 +83,19 @@ const GROUP_MAP = {
   attraction: "Lloc d'interès",
 };
 
+const DEFAULT_GROUP_CHOICES = [
+  "Restaurant",
+  "Parking",
+  "Casa",
+  "Platja",
+  "Hotel",
+  "Botiga",
+  "Mirador",
+  "Bar",
+  "Museu",
+  "Lloc d'interès",
+];
+
 function loadRecords() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("ubicacions-gps-lluis-ia-v1") || "[]");
@@ -100,6 +115,42 @@ function loadRecords() {
 
 function saveRecords() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records));
+}
+
+function loadGroupChoices() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(`${STORAGE_KEY}-groups`) || "[]");
+    const merged = [...new Set([...DEFAULT_GROUP_CHOICES, ...(Array.isArray(saved) ? saved : [])])];
+    return merged.filter(Boolean);
+  } catch {
+    return [...DEFAULT_GROUP_CHOICES];
+  }
+}
+
+function saveGroupChoices() {
+  localStorage.setItem(`${STORAGE_KEY}-groups`, JSON.stringify(state.groupChoices));
+}
+
+function renderGroupChoices() {
+  groupOptions.innerHTML = "";
+  state.groupChoices.forEach((choice) => {
+    const option = document.createElement("option");
+    option.value = choice;
+    groupOptions.appendChild(option);
+  });
+}
+
+function rememberGroupChoice(value) {
+  const clean = value.trim();
+  if (!clean) {
+    return;
+  }
+  if (!state.groupChoices.some((item) => item.toLowerCase() === clean.toLowerCase())) {
+    state.groupChoices.push(clean);
+    state.groupChoices.sort((a, b) => a.localeCompare(b, "ca"));
+    saveGroupChoices();
+    renderGroupChoices();
+  }
 }
 
 function createBlankRecord() {
@@ -291,6 +342,8 @@ function saveCurrentRecord() {
     return;
   }
 
+  rememberGroupChoice(values.group);
+
   const current = getCurrentRecord();
   const payload = {
     ...(current || createBlankRecord()),
@@ -320,7 +373,7 @@ function startNewRecord() {
   const blank = createBlankRecord();
   state.currentId = blank.id;
   fillForm(blank);
-  gpsStatus.textContent = "Nou registre preparat. Pots omplir-lo i guardar-lo quan vulguis.";
+  gpsStatus.textContent = "";
   renderRecordList();
 }
 
@@ -344,10 +397,13 @@ function deleteCurrentRecord() {
   } else {
     state.currentId = null;
     fillForm(createBlankRecord());
+    gpsStatus.textContent = "";
   }
 
   renderRecordList();
-  gpsStatus.textContent = "Registre esborrat.";
+  if (state.records.length) {
+    gpsStatus.textContent = "Registre esborrat.";
+  }
 }
 
 function changeRecord(step) {
@@ -648,6 +704,8 @@ function closeExtraGallery() {
 }
 
 function bootstrap() {
+  renderGroupChoices();
+
   if (state.records.length) {
     const ordered = [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
     state.currentId = ordered[0].id;
