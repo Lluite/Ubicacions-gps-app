@@ -76,6 +76,8 @@ let state = {
 let gpsCaptureInProgress = false;
 let autosaveTimer = null;
 let photoTouchStartX = null;
+const PHOTO_MAX_SIZE = 1600;
+const PHOTO_QUALITY = 0.8;
 
 const GROUP_MAP = {
   restaurant: "Restaurant",
@@ -620,6 +622,48 @@ function buildAddressFromParts(address = {}) {
   return [line1, line2, line3].filter(Boolean).join("\n");
 }
 
+function readFileAsDataUrl(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImageFromDataUrl(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = dataUrl;
+  });
+}
+
+async function optimizeImage(file) {
+  const dataUrl = await readFileAsDataUrl(file);
+  const image = await loadImageFromDataUrl(dataUrl);
+  const longestSide = Math.max(image.width, image.height);
+
+  if (longestSide <= PHOTO_MAX_SIZE) {
+    return dataUrl;
+  }
+
+  const scale = PHOTO_MAX_SIZE / longestSide;
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return dataUrl;
+  }
+
+  context.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL("image/jpeg", PHOTO_QUALITY);
+}
+
 async function reverseLookup(lat, lon) {
   const url = new URL("https://nominatim.openstreetmap.org/reverse");
   url.searchParams.set("format", "jsonv2");
@@ -853,14 +897,7 @@ function captureGps() {
 
 function handlePhotos(files, target = "primary") {
   const current = getCurrentRecord() || createBlankRecord();
-  const readers = [...files].map(
-    (file) =>
-      new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(file);
-      })
-  );
+  const readers = [...files].map((file) => optimizeImage(file));
 
   Promise.all(readers).then((images) => {
     if (target === "primary") {
@@ -889,8 +926,11 @@ function handlePhotos(files, target = "primary") {
     }
     state.dirty = true;
     saveRecords();
-    renderPhotos(current.photosPrimary || []);
-    renderExtraGallery(current.photosExtra || []);
+    if (target === "primary") {
+      renderPhotos(current.photosPrimary || []);
+    } else {
+      renderExtraGallery(current.photosExtra || []);
+    }
     renderRecordList();
     scheduleAutosave();
   });
