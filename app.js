@@ -19,6 +19,8 @@ const galleryBackdrop = document.getElementById("galleryBackdrop");
 const galleryStage = document.getElementById("galleryStage");
 const galleryThumbs = document.getElementById("galleryThumbs");
 const recordTemplate = document.getElementById("recordItemTemplate");
+const toolsMenu = document.getElementById("toolsMenu");
+const toolsMenuButton = document.getElementById("toolsMenuButton");
 
 const fields = {
   date: document.getElementById("dateInput"),
@@ -576,6 +578,7 @@ function renderRecordList() {
 }
 
 function openDrawer() {
+  closeToolsMenu();
   drawer.classList.add("open");
   drawer.setAttribute("aria-hidden", "false");
   drawerBackdrop.hidden = false;
@@ -585,6 +588,33 @@ function closeDrawer() {
   drawer.classList.remove("open");
   drawer.setAttribute("aria-hidden", "true");
   drawerBackdrop.hidden = true;
+}
+
+function openToolsMenu() {
+  if (!toolsMenu || !toolsMenuButton) {
+    return;
+  }
+  toolsMenu.hidden = false;
+  toolsMenuButton.setAttribute("aria-expanded", "true");
+}
+
+function closeToolsMenu() {
+  if (!toolsMenu || !toolsMenuButton) {
+    return;
+  }
+  toolsMenu.hidden = true;
+  toolsMenuButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleToolsMenu() {
+  if (!toolsMenu || !toolsMenuButton) {
+    return;
+  }
+  if (toolsMenu.hidden) {
+    openToolsMenu();
+  } else {
+    closeToolsMenu();
+  }
 }
 
 function saveCurrentRecord() {
@@ -612,6 +642,7 @@ function deleteCurrentRecord() {
     alert("No hi ha cap registre seleccionat.");
     return;
   }
+  closeToolsMenu();
   deleteRecordById(current.id);
 }
 
@@ -717,7 +748,7 @@ function downloadBackup() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: "v15",
+    version: "v16",
     totalRecords: state.records.length,
     groupChoices: state.groupChoices,
     records: state.records,
@@ -1126,19 +1157,27 @@ if (contentGrid) {
   );
 }
 
-buttons.openDrawer.addEventListener("click", openDrawer);
 buttons.closeDrawer.addEventListener("click", closeDrawer);
 drawerBackdrop.addEventListener("click", closeDrawer);
 
 if (buttons.newTop) {
   buttons.newTop.addEventListener("click", startNewRecord);
 }
+if (toolsMenuButton) {
+  toolsMenuButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleToolsMenu();
+  });
+}
 buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
 if (buttons.deleteBottom) {
   buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
 }
 if (buttons.backup) {
-  buttons.backup.addEventListener("click", downloadBackup);
+  buttons.backup.addEventListener("click", () => {
+    closeToolsMenu();
+    downloadBackup();
+  });
 }
 if (buttons.previousRecord) {
   buttons.previousRecord.addEventListener("click", () => changeRecord(-1));
@@ -1159,6 +1198,22 @@ buttons.closeGallery.addEventListener("click", closeExtraGallery);
 buttons.deletePrimaryPhoto.addEventListener("click", () => deleteCurrentPhoto("primary"));
 buttons.deleteExtraPhoto.addEventListener("click", () => deleteCurrentPhoto("extra"));
 galleryBackdrop.addEventListener("click", closeExtraGallery);
+if (buttons.openDrawer) {
+  buttons.openDrawer.addEventListener("click", () => {
+    closeToolsMenu();
+    openDrawer();
+  });
+}
+
+document.addEventListener("click", (event) => {
+  if (!toolsMenu || !toolsMenuButton || toolsMenu.hidden) {
+    return;
+  }
+  if (toolsMenu.contains(event.target) || toolsMenuButton.contains(event.target)) {
+    return;
+  }
+  closeToolsMenu();
+});
 
 quickPhotoInput.addEventListener("change", () => {
   if (quickPhotoInput.files?.length) {

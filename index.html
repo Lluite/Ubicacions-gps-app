@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Ubicacions GPS</title>
-    <link rel="stylesheet" href="./styles.css?v=20260818-10" />
+    <link rel="stylesheet" href="./styles.css?v=20260818-11" />
   </head>
   <body>
     <div class="app-shell">
@@ -72,7 +72,7 @@
               <p class="eyebrow">Agenda de llocs</p>
               <h1>Ubicacions GPS</h1>
               <div class="brand-meta">
-                <p class="version-pill">v15</p>
+                <p class="version-pill">v16</p>
                 <p class="record-total-pill" id="recordTotalPill">0 registres</p>
                 <p class="record-position-pill" id="recordPositionPill">Fitxa 0/0</p>
               </div>
@@ -85,18 +85,28 @@
               <button type="button" class="nav-chip" id="nextRecordButton" aria-label="Registre següent">›</button>
             </div>
             <div class="mini-actions">
-              <button type="button" class="icon-button backup-button" id="backupButton" aria-label="Desar còpia de seguretat">
-                <span class="toolbar-stack">
-                  <span class="toolbar-emoji">💾</span>
-                  <span class="toolbar-label">Còpia</span>
-                </span>
-              </button>
-              <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
-                <img src="./llistat-icon.png?v=20260818-10" alt="" class="toolbar-icon" />
-              </button>
-              <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
-                <img src="./paperera-icon.png?v=20260818-10" alt="" class="toolbar-icon" />
-              </button>
+              <div class="tools-menu-wrap">
+                <button type="button" class="icon-button tools-button" id="toolsMenuButton" aria-label="Obrir eines" aria-expanded="false">
+                  <span class="toolbar-stack">
+                    <span class="toolbar-emoji">⋯</span>
+                    <span class="toolbar-label">Eines</span>
+                  </span>
+                </button>
+                <div class="tools-menu" id="toolsMenu" hidden>
+                  <button type="button" class="tools-menu-item" id="backupButton">
+                    <span class="tools-menu-icon">💾</span>
+                    <span>Còpia de seguretat</span>
+                  </button>
+                  <button type="button" class="tools-menu-item" id="openDrawerButton">
+                    <img src="./llistat-icon.png?v=20260818-11" alt="" class="tools-menu-image" />
+                    <span>Llistat</span>
+                  </button>
+                  <button type="button" class="tools-menu-item danger" id="deleteButton">
+                    <img src="./paperera-icon.png?v=20260818-11" alt="" class="tools-menu-image" />
+                    <span>Esborrar registre</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </header>
@@ -228,11 +238,11 @@
           </div>
         </button>
         <button type="button" class="record-delete-button" aria-label="Esborrar aquest registre">
-          <img src="./paperera-icon.png?v=20260818-10" alt="" class="record-delete-icon" />
+          <img src="./paperera-icon.png?v=20260818-11" alt="" class="record-delete-icon" />
         </button>
       </div>
     </template>
 
-    <script src="./app.js?v=20260818-10"></script>
+    <script src="./app.js?v=20260818-11"></script>
   </body>
 </html>

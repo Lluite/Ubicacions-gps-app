@@ -178,6 +178,10 @@ textarea {
   margin-left: 4px;
 }
 
+.tools-menu-wrap {
+  position: relative;
+}
+
 .plain-badge {
   justify-content: center;
   min-width: 98px;
@@ -229,6 +233,11 @@ textarea {
   box-shadow: 0 14px 24px rgba(13, 9, 20, 0.2);
 }
 
+.tools-button {
+  width: 92px;
+  background: linear-gradient(180deg, rgba(86, 122, 199, 0.95), rgba(43, 72, 132, 0.98));
+}
+
 .icon-button.danger {
   background: rgba(239, 74, 43, 0.18);
   color: #ffb8ab;
@@ -259,6 +268,61 @@ textarea {
   font-weight: 800;
   letter-spacing: 0.04em;
   color: #fff4d9;
+}
+
+.tools-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 230px;
+  padding: 10px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(248, 239, 220, 0.98));
+  border: 1px solid rgba(176, 154, 110, 0.18);
+  box-shadow: 0 22px 36px rgba(24, 18, 7, 0.22);
+  display: grid;
+  gap: 8px;
+  z-index: 80;
+}
+
+.tools-menu-item {
+  border: 0;
+  min-height: 52px;
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(45, 34, 68, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.tools-menu-item:hover {
+  transform: translateY(-1px);
+}
+
+.tools-menu-item.danger {
+  background: #fff4f1;
+  color: #b44632;
+}
+
+.tools-menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.tools-menu-image {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .content-grid {
@@ -380,13 +444,13 @@ textarea {
 .field input,
 .field select {
   min-height: 48px;
-  font-size: 1.08rem;
+  font-size: 16px;
 }
 
 .field textarea {
   min-height: 96px;
   resize: vertical;
-  font-size: 1.02rem;
+  font-size: 16px;
 }
 
 .field input:focus,
@@ -962,7 +1026,7 @@ textarea {
     border-radius: 18px;
   }
 
-  .backup-button {
+  .tools-button {
     width: 78px;
     height: 56px;
     border-radius: 18px;
@@ -979,6 +1043,19 @@ textarea {
 
   .toolbar-label {
     font-size: 0.58rem;
+  }
+
+  .tools-menu {
+    min-width: 206px;
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .tools-menu-item {
+    min-height: 46px;
+    padding: 0 12px;
+    border-radius: 14px;
+    font-size: 0.92rem;
   }
 
   .quick-capture {
@@ -1014,13 +1091,13 @@ textarea {
   .field select {
     min-height: 40px;
     padding: 8px 10px;
-    font-size: 1.04rem;
+    font-size: 16px;
   }
 
   .field textarea {
     min-height: 78px;
     padding: 8px 10px;
-    font-size: 0.98rem;
+    font-size: 16px;
   }
 
   .field-inline {
