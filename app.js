@@ -7,6 +7,8 @@ const recordList = document.getElementById("recordList");
 const searchInput = document.getElementById("searchInput");
 const gpsStatus = document.getElementById("gpsStatus");
 const recordTotalPill = document.getElementById("recordTotalPill");
+const recordPositionPill = document.getElementById("recordPositionPill");
+const contentGrid = document.getElementById("contentGrid");
 const photoStage = document.getElementById("photoStage");
 const photoDots = document.getElementById("photoDots");
 const photoTitle = document.getElementById("photoTitle");
@@ -78,6 +80,8 @@ let state = {
 let gpsCaptureInProgress = false;
 let autosaveTimer = null;
 let photoTouchStartX = null;
+let recordTouchStartX = null;
+let recordTouchStartY = null;
 const PHOTO_MAX_SIZE = 1600;
 const PHOTO_QUALITY = 0.8;
 
@@ -361,6 +365,10 @@ function movePhoto(step) {
   }
 }
 
+function getOrderedRecords() {
+  return [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
+}
+
 function refreshPhotoStatus(photos, totalSlides) {
   const onAddSlide = photos.length < 5 && state.activePhotoIndex === totalSlides - 1;
   photoCounterPill.textContent = `${photos.length}/5`;
@@ -479,7 +487,7 @@ function formatListSubtitle(record) {
 
 function renderRecordList() {
   const term = state.searchTerm.trim().toLowerCase();
-  const records = [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
+  const records = getOrderedRecords();
   const filtered = records.filter((record) => {
     if (!term) {
       return true;
@@ -515,6 +523,12 @@ function renderRecordList() {
 
   if (recordTotalPill) {
     recordTotalPill.textContent = `${state.records.length} ${state.records.length === 1 ? "registre" : "registres"}`;
+  }
+
+  if (recordPositionPill) {
+    const currentIndex = records.findIndex((record) => record.id === state.currentId);
+    recordPositionPill.textContent =
+      currentIndex >= 0 ? `Fitxa ${currentIndex + 1}/${records.length}` : `Fitxa 0/${records.length}`;
   }
 
 }
@@ -587,7 +601,7 @@ function changeRecord(step) {
   persistCurrentRecordSilently();
   discardChangesSilently();
 
-  const ordered = [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
+  const ordered = getOrderedRecords();
   const currentIndex = Math.max(
     0,
     ordered.findIndex((record) => record.id === state.currentId)
@@ -994,7 +1008,7 @@ function bootstrap() {
   renderGroupChoices();
 
   if (state.records.length) {
-    const ordered = [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
+    const ordered = getOrderedRecords();
     state.currentId = ordered[0].id;
     fillForm(getCurrentRecord());
   } else {
@@ -1026,6 +1040,44 @@ searchInput.addEventListener("input", () => {
   state.searchTerm = searchInput.value;
   renderRecordList();
 });
+
+if (contentGrid) {
+  contentGrid.addEventListener(
+    "touchstart",
+    (event) => {
+      if (event.target.closest("input, textarea, select, button, .photo-stage, .photo-dots, .gallery-modal")) {
+        recordTouchStartX = null;
+        recordTouchStartY = null;
+        return;
+      }
+
+      recordTouchStartX = event.touches[0].clientX;
+      recordTouchStartY = event.touches[0].clientY;
+    },
+    { passive: true }
+  );
+
+  contentGrid.addEventListener(
+    "touchend",
+    (event) => {
+      if (recordTouchStartX === null || recordTouchStartY === null) {
+        return;
+      }
+
+      const deltaX = event.changedTouches[0].clientX - recordTouchStartX;
+      const deltaY = event.changedTouches[0].clientY - recordTouchStartY;
+      recordTouchStartX = null;
+      recordTouchStartY = null;
+
+      if (Math.abs(deltaX) < 70 || Math.abs(deltaY) > 50) {
+        return;
+      }
+
+      changeRecord(deltaX < 0 ? 1 : -1);
+    },
+    { passive: true }
+  );
+}
 
 buttons.openDrawer.addEventListener("click", openDrawer);
 buttons.closeDrawer.addEventListener("click", closeDrawer);
