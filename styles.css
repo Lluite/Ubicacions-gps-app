@@ -285,6 +285,10 @@ textarea {
   z-index: 80;
 }
 
+.tools-menu[hidden] {
+  display: none !important;
+}
+
 .tools-menu-item {
   border: 0;
   min-height: 52px;
@@ -444,13 +448,15 @@ textarea {
 .field input,
 .field select {
   min-height: 48px;
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1.25;
 }
 
 .field textarea {
   min-height: 96px;
   resize: vertical;
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1.35;
 }
 
 .field input:focus,
@@ -1091,13 +1097,15 @@ textarea {
   .field select {
     min-height: 40px;
     padding: 8px 10px;
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.25;
   }
 
   .field textarea {
     min-height: 78px;
     padding: 8px 10px;
-    font-size: 16px;
+    font-size: 18px;
+    line-height: 1.35;
   }
 
   .field-inline {
