@@ -4,7 +4,6 @@ const form = document.getElementById("recordForm");
 const drawer = document.getElementById("recordDrawer");
 const drawerBackdrop = document.getElementById("drawerBackdrop");
 const recordList = document.getElementById("recordList");
-const recordCounter = document.getElementById("recordCounter");
 const searchInput = document.getElementById("searchInput");
 const gpsStatus = document.getElementById("gpsStatus");
 const photoStage = document.getElementById("photoStage");
@@ -32,9 +31,7 @@ const fields = {
 };
 
 const buttons = {
-  save: document.getElementById("saveButton"),
   newTop: document.getElementById("newButton"),
-  newBottom: document.getElementById("newBottomButton"),
   deleteTop: document.getElementById("deleteButton"),
   deleteBottom: document.getElementById("deleteBottomButton"),
   openDrawer: document.getElementById("openDrawerButton"),
@@ -43,8 +40,6 @@ const buttons = {
   route: document.getElementById("routeButton"),
   call: document.getElementById("callButton"),
   web: document.getElementById("openWebButton"),
-  previous: document.getElementById("previousButton"),
-  next: document.getElementById("nextButton"),
   albumPrimary: document.getElementById("albumPrimaryButton"),
   albumExtra: document.getElementById("albumExtraButton"),
   closeGallery: document.getElementById("closeGalleryButton"),
@@ -52,7 +47,6 @@ const buttons = {
   deleteExtraPhoto: document.getElementById("deleteExtraPhotoButton"),
 };
 
-const photoInput = document.getElementById("photoInput");
 const quickPhotoInput = document.getElementById("quickPhotoInput");
 const extraPhotoInput = document.getElementById("extraPhotoInput");
 
@@ -80,6 +74,8 @@ let state = {
 };
 
 let gpsCaptureInProgress = false;
+let autosaveTimer = null;
+let photoTouchStartX = null;
 
 const GROUP_MAP = {
   restaurant: "Restaurant",
@@ -264,14 +260,95 @@ function markDirty() {
 }
 
 function confirmDiscardIfNeeded() {
-  if (!state.dirty) {
-    return true;
-  }
-  return window.confirm("Hi ha canvis sense guardar. Vols continuar i perdre aquests canvis?");
+  persistCurrentRecordSilently();
+  return true;
 }
 
 function discardChangesSilently() {
   state.dirty = false;
+}
+
+function hasRecordContent(record) {
+  if (!record) {
+    return false;
+  }
+
+  return Boolean(
+    record.date ||
+      record.time ||
+      record.name ||
+      record.group ||
+      record.latitude ||
+      record.longitude ||
+      record.address ||
+      record.web ||
+      record.phone ||
+      record.notes ||
+      (record.photosPrimary && record.photosPrimary.length) ||
+      (record.photosExtra && record.photosExtra.length)
+  );
+}
+
+function buildPayloadFromCurrentForm() {
+  const values = readForm();
+  const current = getCurrentRecord();
+  return {
+    ...(current || createBlankRecord()),
+    ...values,
+    photosPrimary: current?.photosPrimary || [],
+    photosExtra: current?.photosExtra || [],
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function persistCurrentRecordSilently() {
+  const payload = buildPayloadFromCurrentForm();
+  const alreadyExists = state.records.some((record) => record.id === payload.id);
+
+  if (!hasRecordContent(payload)) {
+    if (alreadyExists) {
+      state.records = state.records.filter((record) => record.id !== payload.id);
+      saveRecords();
+      renderRecordList();
+    }
+    state.dirty = false;
+    return null;
+  }
+
+  rememberGroupChoice(payload.group);
+
+  if (alreadyExists) {
+    state.records = state.records.map((record) => (record.id === payload.id ? payload : record));
+  } else {
+    state.records.push(payload);
+  }
+
+  state.currentId = payload.id;
+  saveRecords();
+  state.dirty = false;
+  renderRecordList();
+  return payload;
+}
+
+function scheduleAutosave() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => {
+    persistCurrentRecordSilently();
+  }, 450);
+}
+
+function movePhoto(step) {
+  const photos = getCurrentRecord()?.photosPrimary || [];
+  const totalSlides = photos.length + (photos.length < 5 ? 1 : 0);
+  if (totalSlides <= 1) {
+    return;
+  }
+
+  const nextIndex = Math.max(0, Math.min(totalSlides - 1, state.activePhotoIndex + step));
+  if (nextIndex !== state.activePhotoIndex) {
+    state.activePhotoIndex = nextIndex;
+    renderPhotos(photos);
+  }
 }
 
 function refreshPhotoStatus(photos, totalSlides) {
@@ -279,9 +356,9 @@ function refreshPhotoStatus(photos, totalSlides) {
   photoCounterPill.textContent = `${photos.length}/5`;
 
   if (!photos.length) {
-    photoHelper.textContent = "Llisca cap als costats i toca l'espai en blanc per afegir la primera foto.";
+    photoHelper.textContent = "Fes servir el botó superior per fer la primera foto.";
   } else if (onAddSlide) {
-    photoHelper.textContent = "Ara ets a l'espai en blanc. Toca'l si vols afegir una altra foto.";
+    photoHelper.textContent = "Ara ets a l'espai nou. Fes servir el botó superior per afegir la següent foto.";
   } else {
     photoHelper.textContent = `Foto ${state.activePhotoIndex + 1} de ${photos.length}. Llisca cap als costats per veure'n més.`;
   }
@@ -303,69 +380,58 @@ function renderPhotos(photos) {
 
   state.activePhotoIndex = Math.max(0, Math.min(state.activePhotoIndex, Math.max(0, totalSlides - 1)));
 
-  const carousel = document.createElement("div");
-  carousel.className = "photo-carousel";
-
-  photos.forEach((photo, index) => {
-    const slide = document.createElement("article");
-    slide.className = "photo-slide";
-    slide.innerHTML = `<img src="${photo}" alt="Foto ${index + 1} del registre" />`;
-    carousel.appendChild(slide);
-  });
-
-  if (canAddMore) {
-    const addSlide = document.createElement("article");
-    addSlide.className = "photo-slide add-slide";
-    addSlide.innerHTML = `
-      <div class="add-photo-slide">
-        <img src="./camera-icon.png?v=20260817-5" alt="" />
-        <strong>Espai per una altra foto</strong>
-        <span>Quan hi arribis lliscant, toca aquest botó i afegeix la següent imatge.</span>
-        <button type="button" class="slide-upload-label" id="slideAddPhotoButton">
-          Afegir foto
-        </button>
-      </div>
+  if (!photos.length) {
+    photoStage.innerHTML = `
+      <article class="photo-slide add-slide">
+        <div class="add-photo-slide">
+          <img src="./camera-icon.png?v=20260818-1" alt="" />
+          <strong>Encara no hi ha fotos</strong>
+          <span>Fes servir el botó “Fer o afegir fotos” per començar.</span>
+        </div>
+      </article>
     `;
-    carousel.appendChild(addSlide);
+  } else if (canAddMore && state.activePhotoIndex === totalSlides - 1) {
+    photoStage.innerHTML = `
+      <article class="photo-slide add-slide">
+        <div class="add-photo-slide">
+          <img src="./camera-icon.png?v=20260818-1" alt="" />
+          <strong>Espai per una altra foto</strong>
+          <span>Quan vulguis la següent, fes servir el botó superior “Fer o afegir fotos”.</span>
+        </div>
+      </article>
+    `;
+  } else {
+    const photoIndex = Math.min(state.activePhotoIndex, photos.length - 1);
+    photoStage.innerHTML = `<article class="photo-slide"><img src="${photos[photoIndex]}" alt="Foto ${photoIndex + 1} del registre" /></article>`;
   }
-
-  photoStage.appendChild(carousel);
 
   for (let index = 0; index < totalSlides; index += 1) {
     const dot = document.createElement("span");
     dot.className = `photo-dot${index === state.activePhotoIndex ? " active" : ""}`;
+    dot.addEventListener("click", () => {
+      state.activePhotoIndex = index;
+      renderPhotos(photos);
+    });
     photoDots.appendChild(dot);
   }
 
-  const slideAddPhotoButton = document.getElementById("slideAddPhotoButton");
-  if (slideAddPhotoButton) {
-    slideAddPhotoButton.addEventListener("click", () => {
-      photoInput.click();
-    });
-  }
-
-  let ticking = false;
-  carousel.addEventListener("scroll", () => {
-    if (ticking) {
+  photoStage.onpointerdown = null;
+  photoStage.ontouchstart = (event) => {
+    photoTouchStartX = event.touches[0].clientX;
+  };
+  photoStage.ontouchend = (event) => {
+    if (photoTouchStartX === null) {
       return;
     }
+    const deltaX = event.changedTouches[0].clientX - photoTouchStartX;
+    photoTouchStartX = null;
+    if (Math.abs(deltaX) < 40) {
+      return;
+    }
+    movePhoto(deltaX < 0 ? 1 : -1);
+  };
 
-    ticking = true;
-    requestAnimationFrame(() => {
-      const width = carousel.clientWidth || 1;
-      const nextIndex = Math.max(0, Math.min(totalSlides - 1, Math.round(carousel.scrollLeft / width)));
-      if (nextIndex !== state.activePhotoIndex) {
-        state.activePhotoIndex = nextIndex;
-        refreshPhotoStatus(photos, totalSlides);
-      }
-      ticking = false;
-    });
-  });
-
-  requestAnimationFrame(() => {
-    carousel.scrollLeft = carousel.clientWidth * state.activePhotoIndex;
-    refreshPhotoStatus(photos, totalSlides);
-  });
+  refreshPhotoStatus(photos, totalSlides);
 }
 
 function renderExtraGallery(photos) {
@@ -437,7 +503,6 @@ function renderRecordList() {
     });
   }
 
-  recordCounter.textContent = `${state.records.length} ${state.records.length === 1 ? "registre" : "registres"}`;
 }
 
 function openDrawer() {
@@ -454,37 +519,15 @@ function closeDrawer() {
 
 function saveCurrentRecord() {
   const values = readForm();
-  if (!values.name) {
-    alert("Escriu com a mínim un nom per guardar el registre.");
-    fields.name.focus();
+  if (!hasRecordContent({ ...values, photosPrimary: getCurrentRecord()?.photosPrimary || [], photosExtra: getCurrentRecord()?.photosExtra || [] })) {
     return;
   }
-
-  rememberGroupChoice(values.group);
-
-  const current = getCurrentRecord();
-  const payload = {
-    ...(current || createBlankRecord()),
-    ...values,
-    photosPrimary: current?.photosPrimary || [],
-    photosExtra: current?.photosExtra || [],
-    updatedAt: new Date().toISOString(),
-  };
-
-  if (current) {
-    state.records = state.records.map((record) => (record.id === current.id ? payload : record));
-  } else {
-    state.records.push(payload);
-  }
-
-  state.currentId = payload.id;
-  saveRecords();
-  state.dirty = false;
-  renderRecordList();
+  persistCurrentRecordSilently();
   gpsStatus.textContent = "";
 }
 
 function startNewRecord() {
+  persistCurrentRecordSilently();
   discardChangesSilently();
   const blank = createBlankRecord();
   state.currentId = blank.id;
@@ -527,6 +570,7 @@ function changeRecord(step) {
     return;
   }
 
+  persistCurrentRecordSilently();
   discardChangesSilently();
 
   const ordered = [...state.records].sort((a, b) => (a.name || "").localeCompare(b.name || "", "ca"));
@@ -787,6 +831,7 @@ function captureGps() {
         }
 
         gpsStatus.textContent = "";
+        scheduleAutosave();
       } catch {
         gpsStatus.textContent = "";
       } finally {
@@ -847,6 +892,7 @@ function handlePhotos(files, target = "primary") {
     renderPhotos(current.photosPrimary || []);
     renderExtraGallery(current.photosExtra || []);
     renderRecordList();
+    scheduleAutosave();
   });
 }
 
@@ -879,6 +925,8 @@ function deleteCurrentPhoto(target = "primary") {
   saveRecords();
   renderPhotos(current.photosPrimary || []);
   renderExtraGallery(current.photosExtra || []);
+  renderRecordList();
+  scheduleAutosave();
 }
 
 function openExtraGallery() {
@@ -907,7 +955,10 @@ function bootstrap() {
 }
 
 Object.values(fields).forEach((input) => {
-  input.addEventListener("input", markDirty);
+  input.addEventListener("input", () => {
+    markDirty();
+    scheduleAutosave();
+  });
 });
 
 fields.group.addEventListener("change", () => {
@@ -916,6 +967,7 @@ fields.group.addEventListener("change", () => {
     return;
   }
   markDirty();
+  scheduleAutosave();
 });
 
 searchInput.addEventListener("input", () => {
@@ -927,41 +979,21 @@ buttons.openDrawer.addEventListener("click", openDrawer);
 buttons.closeDrawer.addEventListener("click", closeDrawer);
 drawerBackdrop.addEventListener("click", closeDrawer);
 
-buttons.save.addEventListener("click", saveCurrentRecord);
 if (buttons.newTop) {
   buttons.newTop.addEventListener("click", startNewRecord);
 }
-buttons.newBottom.addEventListener("click", startNewRecord);
 buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
 if (buttons.deleteBottom) {
   buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
 }
-buttons.previous.addEventListener("click", () => changeRecord(-1));
-buttons.next.addEventListener("click", () => changeRecord(1));
 buttons.captureGpsTop.addEventListener("click", captureGps);
 buttons.route.addEventListener("click", openRoute);
 buttons.call.addEventListener("click", callPhone);
 buttons.web.addEventListener("click", openWeb);
-if (buttons.albumPrimary) {
-  buttons.albumPrimary.addEventListener("click", () => {
-    state.activePhotoIndex = 0;
-    renderPhotos(getCurrentRecord()?.photosPrimary || []);
-  });
-}
-if (buttons.albumExtra) {
-  buttons.albumExtra.addEventListener("click", openExtraGallery);
-}
 buttons.closeGallery.addEventListener("click", closeExtraGallery);
 buttons.deletePrimaryPhoto.addEventListener("click", () => deleteCurrentPhoto("primary"));
 buttons.deleteExtraPhoto.addEventListener("click", () => deleteCurrentPhoto("extra"));
 galleryBackdrop.addEventListener("click", closeExtraGallery);
-
-photoInput.addEventListener("change", () => {
-  if (photoInput.files?.length) {
-    handlePhotos(photoInput.files, "primary");
-    photoInput.value = "";
-  }
-});
 
 quickPhotoInput.addEventListener("change", () => {
   if (quickPhotoInput.files?.length) {
@@ -978,11 +1010,22 @@ extraPhotoInput.addEventListener("change", () => {
 });
 
 window.addEventListener("beforeunload", (event) => {
+  persistCurrentRecordSilently();
   if (!state.dirty) {
     return;
   }
   event.preventDefault();
   event.returnValue = "";
+});
+
+window.addEventListener("pagehide", () => {
+  persistCurrentRecordSilently();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    persistCurrentRecordSilently();
+  }
 });
 
 form.addEventListener("submit", (event) => {
