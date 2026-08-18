@@ -488,6 +488,38 @@ function formatListSubtitle(record) {
   return pieces[0] || "Sense informació extra";
 }
 
+function deleteRecordById(recordId, options = {}) {
+  const target = state.records.find((record) => record.id === recordId);
+  if (!target) {
+    return;
+  }
+
+  const { skipConfirm = false, fromDrawer = false } = options;
+  if (!skipConfirm && !window.confirm(`Vols esborrar el registre "${target.name || "Sense nom"}"?`)) {
+    return;
+  }
+
+  const wasCurrent = target.id === state.currentId;
+  state.records = state.records.filter((record) => record.id !== target.id);
+  saveRecords();
+
+  if (!state.records.length) {
+    const blank = createBlankRecord();
+    state.currentId = blank.id;
+    fillForm(blank);
+    gpsStatus.textContent = "";
+  } else if (wasCurrent) {
+    state.currentId = getOrderedRecords()[0].id;
+    applyCurrentRecordToForm();
+  } else {
+    renderRecordList();
+  }
+
+  if (!fromDrawer && state.records.length) {
+    gpsStatus.textContent = "Registre esborrat.";
+  }
+}
+
 function renderRecordList() {
   const term = state.searchTerm.trim().toLowerCase();
   const records = getOrderedRecords();
@@ -507,7 +539,10 @@ function renderRecordList() {
     recordList.innerHTML = '<p class="empty-photo">No hi ha registres amb aquest text.</p>';
   } else {
     filtered.forEach((record) => {
-      const item = recordTemplate.content.firstElementChild.cloneNode(true);
+      const shell = recordTemplate.content.firstElementChild.cloneNode(true);
+      const item = shell.querySelector(".record-item");
+      const deleteButton = shell.querySelector(".record-delete-button");
+
       item.classList.toggle("active", record.id === state.currentId);
       item.querySelector(".record-avatar").textContent = (record.name || "?").trim().slice(0, 2).toUpperCase();
       item.querySelector("strong").textContent = record.name || "Sense nom";
@@ -520,7 +555,11 @@ function renderRecordList() {
         applyCurrentRecordToForm();
         closeDrawer();
       });
-      recordList.appendChild(item);
+      deleteButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        deleteRecordById(record.id, { fromDrawer: true });
+      });
+      recordList.appendChild(shell);
     });
   }
 
@@ -573,27 +612,7 @@ function deleteCurrentRecord() {
     alert("No hi ha cap registre seleccionat.");
     return;
   }
-
-  if (!window.confirm(`Vols esborrar el registre "${current.name || "Sense nom"}"?`)) {
-    return;
-  }
-
-  state.records = state.records.filter((record) => record.id !== current.id);
-  saveRecords();
-
-  if (state.records.length) {
-    state.currentId = state.records[0].id;
-    fillForm(getCurrentRecord());
-  } else {
-    state.currentId = null;
-    fillForm(createBlankRecord());
-    gpsStatus.textContent = "";
-  }
-
-  renderRecordList();
-  if (state.records.length) {
-    gpsStatus.textContent = "Registre esborrat.";
-  }
+  deleteRecordById(current.id);
 }
 
 function changeRecord(step) {
@@ -698,7 +717,7 @@ function downloadBackup() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: "v11",
+    version: "v14",
     totalRecords: state.records.length,
     groupChoices: state.groupChoices,
     records: state.records,

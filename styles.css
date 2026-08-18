@@ -154,14 +154,15 @@ textarea {
 }
 
 .nav-chip {
-  width: 54px;
-  height: 54px;
-  border: 0;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.12);
+  width: 60px;
+  height: 60px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
   color: #fff;
-  font-size: 1.9rem;
+  font-size: 2rem;
   line-height: 1;
+  box-shadow: 0 14px 24px rgba(13, 9, 20, 0.2);
   cursor: pointer;
   transition: transform 0.18s ease, background 0.18s ease;
 }
@@ -173,7 +174,7 @@ textarea {
 .mini-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   margin-left: 4px;
 }
 
@@ -218,12 +219,14 @@ textarea {
 }
 
 .icon-button {
-  width: 76px;
-  height: 76px;
+  width: 72px;
+  height: 72px;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
   color: #fff;
   font-size: 1.4rem;
+  box-shadow: 0 14px 24px rgba(13, 9, 20, 0.2);
 }
 
 .icon-button.danger {
@@ -237,8 +240,8 @@ textarea {
 }
 
 .toolbar-icon {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   display: block;
   margin: 0 auto;
@@ -316,7 +319,7 @@ textarea {
 
 .field-row {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .two-columns {
@@ -328,21 +331,21 @@ textarea {
 }
 
 .compact .field input {
-  min-height: 60px;
+  min-height: 52px;
 }
 
 .field {
   display: grid;
-  gap: 8px;
-  padding: 14px 16px 16px;
-  border-radius: 22px;
+  gap: 6px;
+  padding: 12px 14px 14px;
+  border-radius: 20px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 244, 232, 0.98));
   border: 1px solid rgba(176, 154, 110, 0.18);
   box-shadow: 0 12px 24px rgba(90, 72, 34, 0.07);
 }
 
 .field span {
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   color: #5f2ca3;
   font-weight: 700;
 }
@@ -354,22 +357,22 @@ textarea {
   border: 1px solid rgba(188, 170, 132, 0.34);
   background: #fffdfa;
   color: var(--ink);
-  border-radius: 18px;
-  padding: 16px 18px;
+  border-radius: 16px;
+  padding: 12px 14px;
   outline: none;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .field input,
 .field select {
-  min-height: 62px;
-  font-size: 1.03rem;
+  min-height: 54px;
+  font-size: 1.02rem;
 }
 
 .field textarea {
-  min-height: 130px;
+  min-height: 108px;
   resize: vertical;
-  font-size: 1.02rem;
+  font-size: 1rem;
 }
 
 .field input:focus,
@@ -382,8 +385,8 @@ textarea {
 
 .field-inline {
   display: grid;
-  grid-template-columns: 1fr 72px;
-  gap: 10px;
+  grid-template-columns: 1fr 62px;
+  gap: 8px;
   align-items: end;
 }
 
@@ -392,8 +395,8 @@ textarea {
 }
 
 .inline-action {
-  min-height: 62px;
-  border-radius: 18px;
+  min-height: 54px;
+  border-radius: 16px;
   background: linear-gradient(180deg, #f3efe7, #e8dfcf);
   color: #2c2b38;
   box-shadow: 0 10px 18px rgba(45, 34, 68, 0.06);
@@ -413,8 +416,8 @@ textarea {
 }
 
 .inline-icon {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   display: block;
 }
@@ -831,6 +834,13 @@ textarea {
   padding: 2px 6px 4px 0;
 }
 
+.record-item-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  gap: 10px;
+  align-items: stretch;
+}
+
 .record-item {
   display: grid;
   grid-template-columns: 48px 1fr;
@@ -842,6 +852,28 @@ textarea {
   border: 1px solid rgba(90, 72, 34, 0.07);
   box-shadow: 0 12px 24px rgba(45, 34, 68, 0.07);
   text-align: left;
+}
+
+.record-delete-button {
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff4f1, #ffe8e1);
+  border: 1px solid rgba(180, 70, 50, 0.12);
+  box-shadow: 0 12px 24px rgba(45, 34, 68, 0.06);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.record-delete-button:hover {
+  transform: translateY(-1px);
+}
+
+.record-delete-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .record-item.active {
@@ -912,15 +944,25 @@ textarea {
   }
 
   .nav-chip {
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     border-radius: 16px;
     font-size: 1.7rem;
   }
 
   .icon-button {
-    width: 68px;
-    height: 68px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .toolbar-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .toolbar-emoji {
+    font-size: 1.28rem;
   }
 
   .quick-capture {
@@ -941,6 +983,42 @@ textarea {
 
   .split-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field {
+    padding: 10px 12px 12px;
+    border-radius: 18px;
+  }
+
+  .field span {
+    font-size: 0.84rem;
+  }
+
+  .field input,
+  .field select {
+    min-height: 46px;
+    padding: 10px 12px;
+    font-size: 0.98rem;
+  }
+
+  .field textarea {
+    min-height: 88px;
+    padding: 10px 12px;
+    font-size: 0.96rem;
+  }
+
+  .field-inline {
+    grid-template-columns: 1fr 52px;
+  }
+
+  .inline-action {
+    min-height: 46px;
+    border-radius: 14px;
+  }
+
+  .inline-icon {
+    width: 24px;
+    height: 24px;
   }
 
   .media-column {
@@ -1013,5 +1091,36 @@ textarea {
 
   .photo-counter-pill {
     min-width: 54px;
+  }
+
+  .record-item-shell {
+    grid-template-columns: minmax(0, 1fr) 50px;
+    gap: 8px;
+  }
+
+  .record-item {
+    grid-template-columns: 42px 1fr;
+    gap: 10px;
+    padding: 12px 13px;
+    border-radius: 18px;
+  }
+
+  .record-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    font-size: 0.92rem;
+  }
+
+  .record-copy strong {
+    font-size: 0.95rem;
+  }
+
+  .record-copy span {
+    font-size: 0.84rem;
+  }
+
+  .record-delete-button {
+    border-radius: 16px;
   }
 }

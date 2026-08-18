@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Ubicacions GPS</title>
-    <link rel="stylesheet" href="./styles.css?v=20260818-8" />
+    <link rel="stylesheet" href="./styles.css?v=20260818-9" />
   </head>
   <body>
     <div class="app-shell">
@@ -72,7 +72,7 @@
               <p class="eyebrow">Agenda de llocs</p>
               <h1>Ubicacions GPS</h1>
               <div class="brand-meta">
-                <p class="version-pill">v13</p>
+                <p class="version-pill">v14</p>
                 <p class="record-total-pill" id="recordTotalPill">0 registres</p>
                 <p class="record-position-pill" id="recordPositionPill">Fitxa 0/0</p>
               </div>
@@ -89,10 +89,10 @@
                 <span class="toolbar-emoji">⭳</span>
               </button>
               <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
-                <img src="./llistat-icon.png?v=20260818-8" alt="" class="toolbar-icon" />
+                <img src="./llistat-icon.png?v=20260818-9" alt="" class="toolbar-icon" />
               </button>
               <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
-                <img src="./paperera-icon.png?v=20260818-8" alt="" class="toolbar-icon" />
+                <img src="./paperera-icon.png?v=20260818-9" alt="" class="toolbar-icon" />
               </button>
             </div>
           </div>
@@ -222,15 +222,20 @@
     </div>
 
     <template id="recordItemTemplate">
-      <button type="button" class="record-item">
-        <div class="record-avatar"></div>
-        <div class="record-copy">
-          <strong></strong>
-          <span></span>
-        </div>
-      </button>
+      <div class="record-item-shell">
+        <button type="button" class="record-item">
+          <div class="record-avatar"></div>
+          <div class="record-copy">
+            <strong></strong>
+            <span></span>
+          </div>
+        </button>
+        <button type="button" class="record-delete-button" aria-label="Esborrar aquest registre">
+          <img src="./paperera-icon.png?v=20260818-9" alt="" class="record-delete-icon" />
+        </button>
+      </div>
     </template>
 
-    <script src="./app.js?v=20260818-8"></script>
+    <script src="./app.js?v=20260818-9"></script>
   </body>
 </html>
