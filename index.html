@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Ubicacions GPS</title>
-    <link rel="stylesheet" href="./styles.css?v=20260818-3" />
+    <link rel="stylesheet" href="./styles.css?v=20260818-4" />
   </head>
   <body>
     <div class="app-shell">
@@ -71,17 +71,20 @@
             <div>
               <p class="eyebrow">Agenda de llocs</p>
               <h1>Ubicacions GPS</h1>
-              <p class="version-pill">v8</p>
+              <div class="brand-meta">
+                <p class="version-pill">v9</p>
+                <p class="record-total-pill" id="recordTotalPill">0 registres</p>
+              </div>
             </div>
           </div>
 
           <div class="top-actions">
             <div class="mini-actions">
               <button type="button" class="icon-button" id="openDrawerButton" aria-label="Cercar o obrir registre">
-                <img src="./llistat-icon.png?v=20260818-3" alt="" class="toolbar-icon" />
+                <img src="./llistat-icon.png?v=20260818-4" alt="" class="toolbar-icon" />
               </button>
               <button type="button" class="icon-button danger" id="deleteButton" aria-label="Esborrar registre actual">
-                <img src="./paperera-icon.png?v=20260818-3" alt="" class="toolbar-icon" />
+                <img src="./paperera-icon.png?v=20260818-4" alt="" class="toolbar-icon" />
               </button>
             </div>
           </div>
@@ -132,7 +135,7 @@
               <div class="field-inline">
                 <input type="text" id="webInput" placeholder="https://..." />
                 <button type="button" class="inline-action icon-action" id="openWebButton" aria-label="Obrir web">
-                  <img src="./web-icon.png?v=20260818-3" alt="" class="inline-icon" />
+                  <img src="./web-icon.png?v=20260818-4" alt="" class="inline-icon" />
                 </button>
               </div>
             </label>
@@ -143,7 +146,7 @@
                 <div class="field-inline">
                   <input type="text" id="phoneInput" placeholder="+34 600 000 000" />
                   <button type="button" class="inline-action icon-action call" id="callButton" aria-label="Trucar">
-                    <img src="./telefon-icon.png?v=20260818-3" alt="" class="inline-icon" />
+                    <img src="./telefon-icon.png?v=20260818-4" alt="" class="inline-icon" />
                   </button>
                 </div>
               </label>
@@ -220,6 +223,6 @@
       </button>
     </template>
 
-    <script src="./app.js?v=20260818-3"></script>
+    <script src="./app.js?v=20260818-4"></script>
   </body>
 </html>

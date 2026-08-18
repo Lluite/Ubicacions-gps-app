@@ -72,6 +72,14 @@ textarea {
   object-fit: contain;
 }
 
+.brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
 .brand h1,
 .brand h2,
 .drawer-header h2,
@@ -90,6 +98,20 @@ textarea {
   padding: 0 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.12);
+  color: #f3e8d1;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.record-total-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  margin: 0;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
   color: #f3e8d1;
   font-size: 0.74rem;
   font-weight: 700;

@@ -6,6 +6,7 @@ const drawerBackdrop = document.getElementById("drawerBackdrop");
 const recordList = document.getElementById("recordList");
 const searchInput = document.getElementById("searchInput");
 const gpsStatus = document.getElementById("gpsStatus");
+const recordTotalPill = document.getElementById("recordTotalPill");
 const photoStage = document.getElementById("photoStage");
 const photoDots = document.getElementById("photoDots");
 const photoTitle = document.getElementById("photoTitle");
@@ -510,6 +511,10 @@ function renderRecordList() {
       });
       recordList.appendChild(item);
     });
+  }
+
+  if (recordTotalPill) {
+    recordTotalPill.textContent = `${state.records.length} ${state.records.length === 1 ? "registre" : "registres"}`;
   }
 
 }
