@@ -750,7 +750,7 @@ function downloadBackup() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: "v16",
+    version: "v17",
     totalRecords: state.records.length,
     groupChoices: state.groupChoices,
     records: state.records,
@@ -1085,6 +1085,7 @@ function closeExtraGallery() {
 }
 
 function bootstrap() {
+  closeToolsMenu();
   renderGroupChoices();
 
   if (state.records.length) {
