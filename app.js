@@ -595,6 +595,7 @@ function openToolsMenu() {
     return;
   }
   toolsMenu.hidden = false;
+  toolsMenu.style.display = "grid";
   toolsMenuButton.setAttribute("aria-expanded", "true");
 }
 
@@ -603,6 +604,7 @@ function closeToolsMenu() {
     return;
   }
   toolsMenu.hidden = true;
+  toolsMenu.style.display = "none";
   toolsMenuButton.setAttribute("aria-expanded", "false");
 }
 
@@ -1164,10 +1166,13 @@ if (buttons.newTop) {
   buttons.newTop.addEventListener("click", startNewRecord);
 }
 if (toolsMenuButton) {
-  toolsMenuButton.addEventListener("click", (event) => {
+  const handleToolsToggle = (event) => {
+    event.preventDefault();
     event.stopPropagation();
     toggleToolsMenu();
-  });
+  };
+  toolsMenuButton.addEventListener("click", handleToolsToggle);
+  toolsMenuButton.addEventListener("touchstart", handleToolsToggle, { passive: false });
 }
 buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
 if (buttons.deleteBottom) {
@@ -1205,7 +1210,7 @@ if (buttons.openDrawer) {
   });
 }
 
-document.addEventListener("click", (event) => {
+const closeToolsMenuFromOutside = (event) => {
   if (!toolsMenu || !toolsMenuButton || toolsMenu.hidden) {
     return;
   }
@@ -1213,7 +1218,10 @@ document.addEventListener("click", (event) => {
     return;
   }
   closeToolsMenu();
-});
+};
+
+document.addEventListener("click", closeToolsMenuFromOutside);
+document.addEventListener("touchstart", closeToolsMenuFromOutside, { passive: true });
 
 quickPhotoInput.addEventListener("change", () => {
   if (quickPhotoInput.files?.length) {
