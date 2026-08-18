@@ -703,6 +703,9 @@ textarea {
   display: grid;
   grid-template-rows: auto auto 1fr;
   gap: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(123, 106, 243, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 252, 242, 0.99), rgba(247, 239, 223, 0.98));
 }
 
 .record-drawer.open {
@@ -795,11 +798,17 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding: 4px 2px 0;
 }
 
 .search-box {
   display: grid;
   gap: 8px;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(90, 72, 34, 0.08);
+  box-shadow: 0 10px 24px rgba(45, 34, 68, 0.05);
 }
 
 .search-box span {
@@ -810,40 +819,16 @@ textarea {
   width: 100%;
   min-height: 52px;
   border-radius: 16px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(123, 106, 243, 0.14);
   padding: 0 16px;
-}
-
-.drawer-tools {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.drawer-action {
-  min-height: 40px;
-  border: 0;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: rgba(40, 79, 136, 0.1);
-  color: #284f88;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(40, 79, 136, 0.14);
-  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
-}
-
-.drawer-action:hover {
-  transform: translateY(-1px);
-  background: rgba(40, 79, 136, 0.16);
 }
 
 .record-list {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 12px;
   overflow: auto;
-  padding-right: 4px;
+  padding: 2px 6px 4px 0;
 }
 
 .record-item {
@@ -851,15 +836,17 @@ textarea {
   grid-template-columns: 48px 1fr;
   gap: 12px;
   align-items: center;
-  padding: 14px;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 10px 20px rgba(45, 34, 68, 0.06);
+  padding: 15px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(90, 72, 34, 0.07);
+  box-shadow: 0 12px 24px rgba(45, 34, 68, 0.07);
   text-align: left;
 }
 
 .record-item.active {
   outline: 2px solid #7b6af3;
+  background: linear-gradient(180deg, rgba(243, 240, 255, 0.96), rgba(255, 255, 255, 0.96));
 }
 
 .record-avatar {
@@ -880,6 +867,18 @@ textarea {
 .record-copy span {
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.backup-button {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.toolbar-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 @media (max-width: 1024px) {
