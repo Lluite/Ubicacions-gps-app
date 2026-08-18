@@ -247,6 +247,20 @@ textarea {
   margin: 0 auto;
 }
 
+.toolbar-stack {
+  display: inline-grid;
+  justify-items: center;
+  gap: 4px;
+  line-height: 1;
+}
+
+.toolbar-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff4d9;
+}
+
 .content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
@@ -309,8 +323,8 @@ textarea {
 }
 
 .quick-button.route {
-  background: #fff;
-  color: var(--ink);
+  background: linear-gradient(180deg, #527fc1, #234f8f);
+  color: #fff;
 }
 
 .quick-icon {
@@ -319,7 +333,7 @@ textarea {
 
 .field-row {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .two-columns {
@@ -337,7 +351,7 @@ textarea {
 .field {
   display: grid;
   gap: 6px;
-  padding: 12px 14px 14px;
+  padding: 10px 12px 12px;
   border-radius: 20px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 244, 232, 0.98));
   border: 1px solid rgba(176, 154, 110, 0.18);
@@ -345,7 +359,7 @@ textarea {
 }
 
 .field span {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #5f2ca3;
   font-weight: 700;
 }
@@ -357,22 +371,22 @@ textarea {
   border: 1px solid rgba(188, 170, 132, 0.34);
   background: #fffdfa;
   color: var(--ink);
-  border-radius: 16px;
-  padding: 12px 14px;
+  border-radius: 14px;
+  padding: 10px 12px;
   outline: none;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .field input,
 .field select {
-  min-height: 54px;
-  font-size: 1.02rem;
+  min-height: 48px;
+  font-size: 1.08rem;
 }
 
 .field textarea {
-  min-height: 108px;
+  min-height: 96px;
   resize: vertical;
-  font-size: 1rem;
+  font-size: 1.02rem;
 }
 
 .field input:focus,
@@ -395,8 +409,8 @@ textarea {
 }
 
 .inline-action {
-  min-height: 54px;
-  border-radius: 16px;
+  min-height: 48px;
+  border-radius: 14px;
   background: linear-gradient(180deg, #f3efe7, #e8dfcf);
   color: #2c2b38;
   box-shadow: 0 10px 18px rgba(45, 34, 68, 0.06);
@@ -521,24 +535,15 @@ textarea {
   line-height: 1.45;
 }
 
-.photo-header {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.photo-subtitle {
-  margin: 0;
-  font-size: 0.96rem;
-  color: var(--muted);
-  font-weight: 600;
-}
-
 .photo-tools {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+}
+
+.photo-tools-compact {
+  margin-top: 4px;
 }
 
 .text-chip {
@@ -902,7 +907,8 @@ textarea {
 }
 
 .backup-button {
-  background: rgba(255, 255, 255, 0.08);
+  width: 92px;
+  background: linear-gradient(180deg, rgba(86, 122, 199, 0.95), rgba(43, 72, 132, 0.98));
 }
 
 .toolbar-emoji {
@@ -956,13 +962,23 @@ textarea {
     border-radius: 18px;
   }
 
+  .backup-button {
+    width: 78px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
   .toolbar-icon {
     width: 30px;
     height: 30px;
   }
 
   .toolbar-emoji {
-    font-size: 1.28rem;
+    font-size: 1.06rem;
+  }
+
+  .toolbar-label {
+    font-size: 0.58rem;
   }
 
   .quick-capture {
@@ -986,39 +1002,39 @@ textarea {
   }
 
   .field {
-    padding: 10px 12px 12px;
-    border-radius: 18px;
+    padding: 8px 10px 10px;
+    border-radius: 16px;
   }
 
   .field span {
-    font-size: 0.84rem;
+    font-size: 0.8rem;
   }
 
   .field input,
   .field select {
-    min-height: 46px;
-    padding: 10px 12px;
-    font-size: 0.98rem;
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 1.04rem;
   }
 
   .field textarea {
-    min-height: 88px;
-    padding: 10px 12px;
-    font-size: 0.96rem;
+    min-height: 78px;
+    padding: 8px 10px;
+    font-size: 0.98rem;
   }
 
   .field-inline {
-    grid-template-columns: 1fr 52px;
+    grid-template-columns: 1fr 46px;
   }
 
   .inline-action {
-    min-height: 46px;
-    border-radius: 14px;
+    min-height: 40px;
+    border-radius: 12px;
   }
 
   .inline-icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
   }
 
   .media-column {

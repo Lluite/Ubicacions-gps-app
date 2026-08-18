@@ -717,7 +717,7 @@ function downloadBackup() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: "v14",
+    version: "v15",
     totalRecords: state.records.length,
     groupChoices: state.groupChoices,
     records: state.records,
