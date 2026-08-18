@@ -37,6 +37,7 @@ const buttons = {
   openDrawer: document.getElementById("openDrawerButton"),
   closeDrawer: document.getElementById("closeDrawerButton"),
   captureGpsTop: document.getElementById("captureGpsTopButton"),
+  quickPhoto: document.getElementById("quickPhotoButton"),
   route: document.getElementById("routeButton"),
   call: document.getElementById("callButton"),
   web: document.getElementById("openWebButton"),
@@ -337,6 +338,12 @@ function scheduleAutosave() {
   autosaveTimer = setTimeout(() => {
     persistCurrentRecordSilently();
   }, 450);
+}
+
+function flushAutosaveNow() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = null;
+  persistCurrentRecordSilently();
 }
 
 function movePhoto(step) {
@@ -1027,6 +1034,11 @@ if (buttons.deleteBottom) {
   buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
 }
 buttons.captureGpsTop.addEventListener("click", captureGps);
+if (buttons.quickPhoto) {
+  buttons.quickPhoto.addEventListener("click", () => {
+    quickPhotoInput.click();
+  });
+}
 buttons.route.addEventListener("click", openRoute);
 buttons.call.addEventListener("click", callPhone);
 buttons.web.addEventListener("click", openWeb);
@@ -1050,7 +1062,7 @@ extraPhotoInput.addEventListener("change", () => {
 });
 
 window.addEventListener("beforeunload", (event) => {
-  persistCurrentRecordSilently();
+  flushAutosaveNow();
   if (!state.dirty) {
     return;
   }
@@ -1059,13 +1071,17 @@ window.addEventListener("beforeunload", (event) => {
 });
 
 window.addEventListener("pagehide", () => {
-  persistCurrentRecordSilently();
+  flushAutosaveNow();
 });
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
-    persistCurrentRecordSilently();
+    flushAutosaveNow();
   }
+});
+
+window.addEventListener("blur", () => {
+  flushAutosaveNow();
 });
 
 form.addEventListener("submit", (event) => {
