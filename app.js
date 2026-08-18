@@ -37,8 +37,11 @@ const buttons = {
   newTop: document.getElementById("newButton"),
   deleteTop: document.getElementById("deleteButton"),
   deleteBottom: document.getElementById("deleteBottomButton"),
+  backup: document.getElementById("backupButton"),
   openDrawer: document.getElementById("openDrawerButton"),
   closeDrawer: document.getElementById("closeDrawerButton"),
+  previousRecord: document.getElementById("previousRecordButton"),
+  nextRecord: document.getElementById("nextRecordButton"),
   captureGpsTop: document.getElementById("captureGpsTopButton"),
   quickPhoto: document.getElementById("quickPhotoButton"),
   route: document.getElementById("routeButton"),
@@ -690,6 +693,31 @@ async function optimizeImage(file) {
   return canvas.toDataURL("image/jpeg", PHOTO_QUALITY);
 }
 
+function downloadBackup() {
+  flushAutosaveNow();
+
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    version: "v11",
+    totalRecords: state.records.length,
+    groupChoices: state.groupChoices,
+    records: state.records,
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    type: "application/json;charset=utf-8",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  link.href = url;
+  link.download = `ubicacions-gps-backup-${stamp}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 async function reverseLookup(lat, lon) {
   const url = new URL("https://nominatim.openstreetmap.org/reverse");
   url.searchParams.set("format", "jsonv2");
@@ -1089,6 +1117,15 @@ if (buttons.newTop) {
 buttons.deleteTop.addEventListener("click", deleteCurrentRecord);
 if (buttons.deleteBottom) {
   buttons.deleteBottom.addEventListener("click", deleteCurrentRecord);
+}
+if (buttons.backup) {
+  buttons.backup.addEventListener("click", downloadBackup);
+}
+if (buttons.previousRecord) {
+  buttons.previousRecord.addEventListener("click", () => changeRecord(-1));
+}
+if (buttons.nextRecord) {
+  buttons.nextRecord.addEventListener("click", () => changeRecord(1));
 }
 buttons.captureGpsTop.addEventListener("click", captureGps);
 if (buttons.quickPhoto) {

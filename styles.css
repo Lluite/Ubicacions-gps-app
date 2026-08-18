@@ -147,6 +147,29 @@ textarea {
   margin-left: auto;
 }
 
+.record-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-chip {
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 1.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.nav-chip:hover {
+  transform: translateY(-1px);
+}
+
 .mini-actions {
   display: flex;
   align-items: center;
@@ -791,6 +814,22 @@ textarea {
   padding: 0 16px;
 }
 
+.drawer-tools {
+  display: grid;
+  gap: 10px;
+}
+
+.drawer-action {
+  min-height: 50px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #284f88, #163b70);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 22px rgba(28, 61, 110, 0.18);
+}
+
 .record-list {
   display: grid;
   align-content: start;
@@ -854,10 +893,22 @@ textarea {
   .top-actions {
     justify-content: flex-end;
     align-items: center;
+    gap: 12px;
   }
 
   .mini-actions {
     justify-content: flex-end;
+  }
+
+  .record-nav {
+    gap: 8px;
+  }
+
+  .nav-chip {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 1.7rem;
   }
 
   .icon-button {
