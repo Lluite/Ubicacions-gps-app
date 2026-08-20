@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Ubicacions GPS</title>
-    <link rel="stylesheet" href="./styles.css?v=20260818-13" />
+    <link rel="stylesheet" href="./styles.css?v=20260820-19" />
   </head>
   <body>
     <div class="app-shell">
@@ -26,6 +26,7 @@
           <span>Cercar registre</span>
           <input type="search" id="searchInput" placeholder="Nom, adreça, telèfon o web" />
         </label>
+        <button type="button" class="drawer-reset-button" id="clearSearchButton">Veure tots els registres</button>
 
         <div class="record-list" id="recordList"></div>
       </aside>
@@ -72,7 +73,7 @@
               <p class="eyebrow">Agenda de llocs</p>
               <h1>Ubicacions GPS</h1>
               <div class="brand-meta">
-                <p class="version-pill">v18</p>
+                <p class="version-pill">v19</p>
                 <p class="record-total-pill" id="recordTotalPill">0 registres</p>
                 <p class="record-position-pill" id="recordPositionPill">Fitxa 0/0</p>
               </div>
@@ -93,9 +94,21 @@
                   </span>
                 </button>
                 <div class="tools-menu" id="toolsMenu" hidden style="display: none">
+                  <button type="button" class="tools-menu-item" id="newButton">
+                    <span class="tools-menu-icon">＋</span>
+                    <span>Nou registre</span>
+                  </button>
+                  <button type="button" class="tools-menu-item" id="showAllButton">
+                    <span class="tools-menu-icon">☰</span>
+                    <span>Veure tots els registres</span>
+                  </button>
                   <button type="button" class="tools-menu-item" id="backupButton">
                     <span class="tools-menu-icon">💾</span>
                     <span>Còpia de seguretat</span>
+                  </button>
+                  <button type="button" class="tools-menu-item" id="importBackupButton">
+                    <span class="tools-menu-icon">⬆</span>
+                    <span>Importar còpia</span>
                   </button>
                   <button type="button" class="tools-menu-item" id="openDrawerButton">
                     <img src="./llistat-icon.png?v=20260818-13" alt="" class="tools-menu-image" />
@@ -243,6 +256,8 @@
       </div>
     </template>
 
-    <script src="./app.js?v=20260818-13"></script>
+    <input type="file" id="importBackupInput" accept=".json,application/json" hidden />
+
+    <script src="./app.js?v=20260820-19"></script>
   </body>
 </html>

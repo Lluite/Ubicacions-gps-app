@@ -5,6 +5,7 @@ const drawer = document.getElementById("recordDrawer");
 const drawerBackdrop = document.getElementById("drawerBackdrop");
 const recordList = document.getElementById("recordList");
 const searchInput = document.getElementById("searchInput");
+const clearSearchButton = document.getElementById("clearSearchButton");
 const gpsStatus = document.getElementById("gpsStatus");
 const recordTotalPill = document.getElementById("recordTotalPill");
 const recordPositionPill = document.getElementById("recordPositionPill");
@@ -21,6 +22,7 @@ const galleryThumbs = document.getElementById("galleryThumbs");
 const recordTemplate = document.getElementById("recordItemTemplate");
 const toolsMenu = document.getElementById("toolsMenu");
 const toolsMenuButton = document.getElementById("toolsMenuButton");
+const importBackupInput = document.getElementById("importBackupInput");
 
 const fields = {
   date: document.getElementById("dateInput"),
@@ -37,9 +39,11 @@ const fields = {
 
 const buttons = {
   newTop: document.getElementById("newButton"),
+  showAll: document.getElementById("showAllButton"),
   deleteTop: document.getElementById("deleteButton"),
   deleteBottom: document.getElementById("deleteBottomButton"),
   backup: document.getElementById("backupButton"),
+  importBackup: document.getElementById("importBackupButton"),
   openDrawer: document.getElementById("openDrawerButton"),
   closeDrawer: document.getElementById("closeDrawerButton"),
   previousRecord: document.getElementById("previousRecordButton"),
@@ -225,6 +229,29 @@ function createBlankRecord() {
     photosPrimary: [],
     photosExtra: [],
     updatedAt: new Date().toISOString(),
+  };
+}
+
+function sanitizeImportedRecord(record) {
+  const base = createBlankRecord();
+  const source = record && typeof record === "object" ? record : {};
+  return {
+    ...base,
+    ...source,
+    id: String(source.id || crypto.randomUUID()),
+    date: String(source.date || ""),
+    time: String(source.time || ""),
+    name: String(source.name || ""),
+    group: String(source.group || ""),
+    latitude: String(source.latitude || ""),
+    longitude: String(source.longitude || ""),
+    address: String(source.address || ""),
+    web: String(source.web || ""),
+    phone: String(source.phone || ""),
+    notes: String(source.notes || ""),
+    photosPrimary: Array.isArray(source.photosPrimary || source.photos) ? (source.photosPrimary || source.photos) : [],
+    photosExtra: Array.isArray(source.photosExtra) ? source.photosExtra : [],
+    updatedAt: String(source.updatedAt || new Date().toISOString()),
   };
 }
 
@@ -577,6 +604,14 @@ function renderRecordList() {
 
 }
 
+function showAllRecords() {
+  state.searchTerm = "";
+  if (searchInput) {
+    searchInput.value = "";
+  }
+  renderRecordList();
+}
+
 function openDrawer() {
   closeToolsMenu();
   drawer.classList.add("open");
@@ -631,6 +666,8 @@ function saveCurrentRecord() {
 function startNewRecord() {
   persistCurrentRecordSilently();
   discardChangesSilently();
+  showAllRecords();
+  closeToolsMenu();
   const blank = createBlankRecord();
   state.currentId = blank.id;
   fillForm(blank);
@@ -750,7 +787,7 @@ function downloadBackup() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: "v18",
+    version: "v19",
     totalRecords: state.records.length,
     groupChoices: state.groupChoices,
     records: state.records,
@@ -768,6 +805,52 @@ function downloadBackup() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+async function importBackupFile(file) {
+  const text = await file.text();
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error("La còpia no té un format JSON vàlid.");
+  }
+
+  const importedRecords = Array.isArray(parsed)
+    ? parsed
+    : Array.isArray(parsed.records)
+      ? parsed.records
+      : null;
+
+  if (!importedRecords) {
+    throw new Error("No he trobat cap llista de registres dins la còpia.");
+  }
+
+  if (!window.confirm("Aquesta còpia substituirà els registres actuals. Vols continuar?")) {
+    return;
+  }
+
+  state.records = importedRecords.map(sanitizeImportedRecord);
+
+  const importedGroups = Array.isArray(parsed.groupChoices) ? parsed.groupChoices.filter(Boolean).map((item) => String(item).trim()) : [];
+  state.groupChoices = [...new Set([...DEFAULT_GROUP_CHOICES, ...importedGroups])].sort((a, b) => a.localeCompare(b, "ca"));
+  saveGroupChoices();
+  renderGroupChoices();
+  showAllRecords();
+
+  if (state.records.length) {
+    state.currentId = getOrderedRecords()[0].id;
+    applyCurrentRecordToForm();
+  } else {
+    const blank = createBlankRecord();
+    state.currentId = blank.id;
+    fillForm(blank);
+  }
+
+  saveRecords();
+  gpsStatus.textContent = "";
+  closeToolsMenu();
+  closeDrawer();
 }
 
 async function reverseLookup(lat, lon) {
@@ -1122,6 +1205,8 @@ searchInput.addEventListener("input", () => {
   renderRecordList();
 });
 
+clearSearchButton?.addEventListener("click", showAllRecords);
+
 if (contentGrid) {
   contentGrid.addEventListener(
     "touchstart",
@@ -1166,6 +1251,13 @@ drawerBackdrop.addEventListener("click", closeDrawer);
 if (buttons.newTop) {
   buttons.newTop.addEventListener("click", startNewRecord);
 }
+if (buttons.showAll) {
+  buttons.showAll.addEventListener("click", () => {
+    showAllRecords();
+    closeToolsMenu();
+    openDrawer();
+  });
+}
 if (toolsMenuButton) {
   const handleToolsToggle = (event) => {
     event.preventDefault();
@@ -1183,6 +1275,12 @@ if (buttons.backup) {
   buttons.backup.addEventListener("click", () => {
     closeToolsMenu();
     downloadBackup();
+  });
+}
+if (buttons.importBackup) {
+  buttons.importBackup.addEventListener("click", () => {
+    closeToolsMenu();
+    importBackupInput?.click();
   });
 }
 if (buttons.previousRecord) {
@@ -1235,6 +1333,20 @@ extraPhotoInput.addEventListener("change", () => {
   if (extraPhotoInput.files?.length) {
     handlePhotos(extraPhotoInput.files, "extra");
     extraPhotoInput.value = "";
+  }
+});
+
+importBackupInput?.addEventListener("change", async () => {
+  const [file] = importBackupInput.files || [];
+  if (!file) {
+    return;
+  }
+  try {
+    await importBackupFile(file);
+  } catch (error) {
+    alert(error.message || "No he pogut importar la còpia.");
+  } finally {
+    importBackupInput.value = "";
   }
 });
 
