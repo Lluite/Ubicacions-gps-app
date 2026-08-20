@@ -91,8 +91,9 @@ let autosaveTimer = null;
 let photoTouchStartX = null;
 let recordTouchStartX = null;
 let recordTouchStartY = null;
-const PHOTO_MAX_SIZE = 1600;
-const PHOTO_QUALITY = 0.8;
+const PHOTO_MAX_SIZE = 1280;
+const PHOTO_QUALITY = 0.72;
+const AUTOSAVE_DELAY = 1200;
 
 const GROUP_MAP = {
   restaurant: "Restaurant",
@@ -133,6 +134,25 @@ function loadRecords() {
 
 function saveRecords() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records));
+}
+
+function updateRecordSummary(records = getOrderedRecords()) {
+  if (recordTotalPill) {
+    recordTotalPill.textContent = `${state.records.length} ${state.records.length === 1 ? "registre" : "registres"}`;
+  }
+
+  if (recordPositionPill) {
+    const currentIndex = records.findIndex((record) => record.id === state.currentId);
+    recordPositionPill.textContent =
+      currentIndex >= 0 ? `Fitxa ${currentIndex + 1}/${records.length}` : `Fitxa 0/${records.length}`;
+  }
+}
+
+function shouldRefreshRecordList(force = false) {
+  if (force) {
+    return true;
+  }
+  return drawer.classList.contains("open") || Boolean(state.searchTerm.trim());
 }
 
 function loadGroupChoices() {
@@ -341,15 +361,22 @@ function buildPayloadFromCurrentForm() {
   };
 }
 
-function persistCurrentRecordSilently() {
+function persistCurrentRecordSilently(options = {}) {
+  const { forceListRefresh = false } = options;
   const payload = buildPayloadFromCurrentForm();
   const alreadyExists = state.records.some((record) => record.id === payload.id);
+  let recordsChanged = false;
 
   if (!hasRecordContent(payload)) {
     if (alreadyExists) {
       state.records = state.records.filter((record) => record.id !== payload.id);
       saveRecords();
-      renderRecordList();
+      recordsChanged = true;
+      if (shouldRefreshRecordList(forceListRefresh)) {
+        renderRecordList();
+      } else {
+        updateRecordSummary();
+      }
     }
     state.dirty = false;
     return null;
@@ -361,12 +388,17 @@ function persistCurrentRecordSilently() {
     state.records = state.records.map((record) => (record.id === payload.id ? payload : record));
   } else {
     state.records.push(payload);
+    recordsChanged = true;
   }
 
   state.currentId = payload.id;
   saveRecords();
   state.dirty = false;
-  renderRecordList();
+  if (shouldRefreshRecordList(forceListRefresh || recordsChanged)) {
+    renderRecordList();
+  } else {
+    updateRecordSummary();
+  }
   return payload;
 }
 
@@ -374,13 +406,13 @@ function scheduleAutosave() {
   clearTimeout(autosaveTimer);
   autosaveTimer = setTimeout(() => {
     persistCurrentRecordSilently();
-  }, 450);
+  }, AUTOSAVE_DELAY);
 }
 
 function flushAutosaveNow() {
   clearTimeout(autosaveTimer);
   autosaveTimer = null;
-  persistCurrentRecordSilently();
+  persistCurrentRecordSilently({ forceListRefresh: true });
 }
 
 function movePhoto(step) {
@@ -592,16 +624,7 @@ function renderRecordList() {
     });
   }
 
-  if (recordTotalPill) {
-    recordTotalPill.textContent = `${state.records.length} ${state.records.length === 1 ? "registre" : "registres"}`;
-  }
-
-  if (recordPositionPill) {
-    const currentIndex = records.findIndex((record) => record.id === state.currentId);
-    recordPositionPill.textContent =
-      currentIndex >= 0 ? `Fitxa ${currentIndex + 1}/${records.length}` : `Fitxa 0/${records.length}`;
-  }
-
+  updateRecordSummary(records);
 }
 
 function showAllRecords() {
@@ -787,7 +810,7 @@ function downloadBackup() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    version: "v19",
+    version: "v23",
     totalRecords: state.records.length,
     groupChoices: state.groupChoices,
     records: state.records,
@@ -1120,8 +1143,12 @@ function handlePhotos(files, target = "primary") {
     } else {
       renderExtraGallery(current.photosExtra || []);
     }
-    renderRecordList();
-    scheduleAutosave();
+    if (shouldRefreshRecordList()) {
+      renderRecordList();
+    } else {
+      updateRecordSummary();
+    }
+    state.dirty = false;
   });
 }
 
@@ -1154,8 +1181,12 @@ function deleteCurrentPhoto(target = "primary") {
   saveRecords();
   renderPhotos(current.photosPrimary || []);
   renderExtraGallery(current.photosExtra || []);
-  renderRecordList();
-  scheduleAutosave();
+  if (shouldRefreshRecordList()) {
+    renderRecordList();
+  } else {
+    updateRecordSummary();
+  }
+  state.dirty = false;
 }
 
 function openExtraGallery() {
